@@ -30,8 +30,20 @@
     button:active{transform:scale(.985);filter:brightness(.94)}
     .message{display:none;margin:-13px 0 0;color:var(--purple);font-size:17px}
     .message.show{display:block}
-    @media(max-width:480px){.card{padding:35px 27px 26px;border-radius:27px}.celebration{transform:scale(.84);margin:-27px auto 0}.description{margin:14px auto 25px}form{gap:24px}input{height:82px;border-radius:28px}button{height:76px}.scene{min-height:520px}}
-    @media(max-height:700px){.card{padding-top:25px;padding-bottom:22px}.celebration{height:115px;transform:scale(.72);transform-origin:50% 0;margin-bottom:-4px}.description{margin:10px auto 20px}form{gap:18px}input{height:70px}button{height:66px}}
+    @media(max-width:480px){
+      .scene{min-height:520px}
+      .card{left:16px;right:16px;max-width:358px;border-radius:16px;padding:24px 16px 15px}
+      .celebration{width:110px;height:112px;margin:0 auto 7px}
+      .star{left:10px;top:4px;width:90px;height:90px}
+      .confetti{font-size:15px}.c1{left:-2px;top:13px}.c2{right:-2px;top:66px}.c3{left:14px;bottom:1px;font-size:11px}.c4{right:11px;top:3px;font-size:14px}.c5{left:38px;top:-3px;font-size:11px}.c6{right:15px;bottom:1px;font-size:11px}
+      h1{font-size:24px;line-height:1.17;letter-spacing:-.55px}
+      .description{width:calc(100% + 16px);margin:8px -8px 15px;font-size:15.5px;line-height:1.25;letter-spacing:-.18px}
+      form{gap:16px}
+      input{height:52px;border-radius:19px;padding:0 16px;font-size:16px}
+      button{height:49px;border-radius:25px;font-size:16px}
+      .message{margin:-8px 0 -4px;font-size:14px}
+    }
+    @media(max-height:640px) and (max-width:480px){.card{transform:translateY(-50%) scale(.88)}}
     @media(prefers-reduced-motion:reduce){.spark{animation-duration:.01ms!important}}
   </style>
 </head>
