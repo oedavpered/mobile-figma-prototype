@@ -1,0 +1,36 @@
+@import 'tailwindcss';
+
+@layer base {
+  html {
+    background: white;
+  }
+
+  body {
+    min-width: 320px;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  button {
+    cursor: pointer;
+  }
+}
+
+@keyframes sheet-overlay-in {
+  from {
+    background-color: transparent;
+  }
+}
+
+@keyframes sheet-slide-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+.sheet-overlay {
+  animation: sheet-overlay-in 200ms ease-out;
+}
+
+.sheet-panel {
+  animation: sheet-slide-in 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
