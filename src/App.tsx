@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
-const A = `${import.meta.env.BASE_URL}assets`
+const A = `assets`
 
 const icons = {
   qr: `${A}/314c7.svg`,
@@ -136,6 +136,9 @@ const preloadSources = Array.from(
       "d89a3.svg",
       "87ea4.svg",
       "87e6f.svg",
+      "efe4d.svg",
+      "aa8b6.svg",
+      "59108.svg",
     ].map((file) => `${A}/${file}`),
   ]),
 )
@@ -374,6 +377,154 @@ function HomeScreen() {
   )
 }
 
+function OfferBottomSheet({
+  title,
+  price,
+  image,
+  napkin,
+  onClose,
+}: {
+  title: string
+  price: string
+  image: string
+  napkin: boolean
+  onClose: () => void
+}) {
+  const panelRef = useRef<HTMLElement>(null)
+  const swipeStartY = useRef<number | null>(null)
+  const [dragOffset, setDragOffset] = useState(0)
+
+  return (
+    <div className="sheet-overlay fixed inset-0 z-[110] flex items-end justify-center bg-black/40">
+      <button
+        aria-label="Закрыть акцию"
+        className="absolute inset-0"
+        onClick={onClose}
+        type="button"
+      />
+      <section
+        aria-modal="true"
+        className="sheet-panel relative flex h-[calc(100dvh-48px)] w-full max-w-[720px] flex-col overflow-hidden rounded-t-[24px] bg-white"
+        onTouchEnd={() => {
+          if (swipeStartY.current === null) return
+          swipeStartY.current = null
+          if (dragOffset > 100) onClose()
+          else setDragOffset(0)
+        }}
+        onTouchMove={(event) => {
+          if (swipeStartY.current === null) return
+          setDragOffset(
+            Math.max(0, event.touches[0].clientY - swipeStartY.current),
+          )
+        }}
+        onTouchStart={(event) => {
+          const panelTop = panelRef.current?.getBoundingClientRect().top ?? 0
+          const touchY = event.touches[0].clientY
+          if (touchY - panelTop <= 180) swipeStartY.current = touchY
+        }}
+        ref={panelRef}
+        role="dialog"
+        style={
+          dragOffset > 0
+            ? {
+                transform: `translateY(${dragOffset}px)`,
+                transition: "none",
+              }
+            : undefined
+        }
+      >
+        <div className="flex justify-center pb-3 pt-2">
+          <span className="h-[5px] w-[50px] rounded-full bg-[#292929]/10" />
+        </div>
+
+        <div className="overflow-y-auto px-4 pb-24">
+          <article className="relative flex h-[200px] overflow-hidden rounded-bl-lg rounded-br-2xl rounded-tl-lg rounded-tr-2xl bg-[#f9f9f9]">
+            <div className="h-full w-2 shrink-0 rounded-l-2xl bg-[#ee7203]" />
+            <div className="flex min-w-0 flex-1 justify-between">
+              <div className="flex min-w-0 flex-1 flex-col justify-between py-4 pl-4">
+                <div>
+                  <h2 className="max-w-[190px] text-[17px] font-semibold leading-5">
+                    {title}
+                  </h2>
+                  <p className="mt-1 text-[13px] leading-4">Ждем тебя!</p>
+                </div>
+                <p className="text-[12px] leading-[14px] text-[#adadad]">
+                  Истекает через 14 дней
+                </p>
+              </div>
+              <div className="relative h-[200px] w-[120px] shrink-0">
+                <span className="absolute right-4 top-6 z-20 flex h-[51px] w-[51px] items-center justify-center rounded-full bg-[#fb471f] text-[16px] font-semibold text-white">
+                  {price}
+                  <small className="text-[12px]">₽</small>
+                </span>
+                {napkin && (
+                  <img
+                    alt=""
+                    className="absolute left-[-17px] top-[89px] h-[62px] w-[155px] object-contain"
+                    src={`${A}/bd5fb.png`}
+                  />
+                )}
+                <img
+                  alt=""
+                  className={`absolute object-contain ${
+                    napkin
+                      ? "left-[6px] top-[75px] h-[76px] w-[109px]"
+                      : "left-[5px] top-10 h-[120px] w-[120px]"
+                  }`}
+                  src={`${A}/${image}`}
+                />
+              </div>
+            </div>
+            <span className="absolute -left-1.5 top-[94px] h-3 w-3 rounded-full bg-white" />
+          </article>
+
+          <p className="mt-2 text-[14px] leading-4 text-[#adadad]">Описание</p>
+          <div className="mt-2 rounded-2xl bg-[#f9f9f9] p-4 text-[16px] leading-5">
+            Предъяви QR-код в терминале самообслуживания, на кассе или используй
+            в мобильном заказе и получи продукт по специальной цене. Акция
+            доступна в период действия Основного Меню. Акцией можно
+            воспользоваться несколько раз во время срока действия. В одном
+            заказе нельзя использовать несколько одинаковых акций. Акция не
+            действует в доставке.
+          </div>
+
+          <div className="mt-3 flex h-14 items-center gap-2 rounded-2xl bg-[#f9f9f9] p-4">
+            <img alt="" src={`${A}/efe4d.svg`} />
+            <span className="text-[16px] leading-5">Основной зал, Авто</span>
+          </div>
+          <button
+            className="mt-2 flex h-14 w-full items-center gap-2 rounded-2xl bg-[#f9f9f9] p-4 text-left"
+            type="button"
+          >
+            <img alt="" src={`${A}/aa8b6.svg`} />
+            <span className="flex-1 text-[16px] leading-5">
+              Полные правила акции
+            </span>
+            <img alt="" src={`${A}/59108.svg`} />
+          </button>
+          <p className="mt-3 text-[14px] leading-4 text-[#adadad]">
+            Акция доступна в данных предприятиях
+          </p>
+          <div className="mt-2 flex items-center justify-between rounded-2xl bg-[#f9f9f9] p-4">
+            <span className="text-[16px] leading-5">Шереметьевская, 20</span>
+            <span className="text-[14px] text-[#ee7203]">1,7 км</span>
+          </div>
+        </div>
+
+        <div className="absolute inset-x-0 bottom-0 bg-white px-4 pb-4 pt-3">
+          <button
+            className="h-13 w-full rounded-full bg-[#ee7203] px-4 text-[16px] leading-5 text-white"
+            onClick={onClose}
+            type="button"
+          >
+            Добавить
+          </button>
+        </div>
+      </section>
+    </div>
+  )
+}
+
 function OfferCard({
   title,
   price,
@@ -385,46 +536,67 @@ function OfferCard({
   image: string
   napkin?: boolean
 }) {
+  const [isOpen, setIsOpen] = useState(false)
+
   return (
-    <article className="relative flex h-[200px] overflow-hidden rounded-bl-lg rounded-br-2xl rounded-tl-lg rounded-tr-2xl bg-[#f9f9f9]">
-      <div className="h-full w-2 shrink-0 rounded-l-2xl bg-[#ee7203]" />
-      <div className="flex min-w-0 flex-1 justify-between">
-        <div className="flex min-w-0 flex-1 flex-col justify-between py-4 pl-4">
-          <div>
-            <h2 className="max-w-[180px] text-[17px] font-bold leading-5">
-              {title}
-            </h2>
-            <p className="mt-1 text-[13px] leading-4">Ждем тебя!</p>
+    <>
+      <article
+        className="relative flex h-[200px] cursor-pointer overflow-hidden rounded-bl-lg rounded-br-2xl rounded-tl-lg rounded-tr-2xl bg-[#f9f9f9]"
+        onClick={() => setIsOpen(true)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") setIsOpen(true)
+        }}
+        role="button"
+        tabIndex={0}
+      >
+        <div className="h-full w-2 shrink-0 rounded-l-2xl bg-[#ee7203]" />
+        <div className="flex min-w-0 flex-1 justify-between">
+          <div className="flex min-w-0 flex-1 flex-col justify-between py-4 pl-4">
+            <div>
+              <h2 className="max-w-[180px] text-[17px] font-bold leading-5">
+                {title}
+              </h2>
+              <p className="mt-1 text-[13px] leading-4">Ждем тебя!</p>
+            </div>
+            <p className="text-[12px] leading-[14px] text-[#adadad]">
+              Истекает через 14 дней
+            </p>
           </div>
-          <p className="text-[12px] leading-[14px] text-[#adadad]">
-            Истекает через 14 дней
-          </p>
-        </div>
-        <div className="relative h-[200px] w-[120px] shrink-0">
-          <span className="absolute right-4 top-6 z-20 flex h-[51px] w-[51px] items-center justify-center rounded-full bg-[#fb471f] text-[16px] font-semibold text-white">
-            {price}
-            <small className="text-[12px]">₽</small>
-          </span>
-          {napkin && (
+          <div className="relative h-[200px] w-[120px] shrink-0">
+            <span className="absolute right-4 top-6 z-20 flex h-[51px] w-[51px] items-center justify-center rounded-full bg-[#fb471f] text-[16px] font-semibold text-white">
+              {price}
+              <small className="text-[12px]">₽</small>
+            </span>
+            {napkin && (
+              <img
+                alt=""
+                className="absolute left-[-17px] top-[89px] h-[62px] w-[155px] object-contain"
+                src={`${A}/bd5fb.png`}
+              />
+            )}
             <img
               alt=""
-              className="absolute left-[-17px] top-[89px] h-[62px] w-[155px] object-contain"
-              src={`${A}/bd5fb.png`}
+              className={`absolute object-contain ${
+                napkin
+                  ? "left-[6px] top-[75px] h-[76px] w-[109px]"
+                  : "left-[5px] top-10 h-[120px] w-[120px]"
+              }`}
+              src={`${A}/${image}`}
             />
-          )}
-          <img
-            alt=""
-            className={`absolute object-contain ${
-              napkin
-                ? "left-[6px] top-[75px] h-[76px] w-[109px]"
-                : "left-[5px] top-10 h-[120px] w-[120px]"
-            }`}
-            src={`${A}/${image}`}
-          />
+          </div>
         </div>
-      </div>
-      <span className="absolute -left-1.5 top-[94px] h-3 w-3 rounded-full bg-white" />
-    </article>
+        <span className="absolute -left-1.5 top-[94px] h-3 w-3 rounded-full bg-white" />
+      </article>
+      {isOpen && (
+        <OfferBottomSheet
+          image={image}
+          napkin={napkin}
+          onClose={() => setIsOpen(false)}
+          price={price}
+          title={title}
+        />
+      )}
+    </>
   )
 }
 
