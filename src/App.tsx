@@ -161,12 +161,14 @@ function NavItem({
   active = false,
   onClick,
   badge,
+  iconClassName = "",
 }: {
   icon: string
   label: string
   active?: boolean
   onClick?: () => void
   badge?: number
+  iconClassName?: string
 }) {
   return (
     <button
@@ -177,7 +179,7 @@ function NavItem({
       type="button"
     >
       <span className="relative flex h-8 w-8 items-center justify-center">
-        <img alt="" src={icon} />
+        <img alt="" className={iconClassName} src={icon} />
         {!!badge && (
           <span className="absolute -right-1 -top-0.5 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-[#ee7203] px-1 text-[10px] font-semibold leading-4 text-white">
             {badge > 99 ? "99+" : badge}
@@ -428,7 +430,7 @@ function OfferBottomSheet({
       />
       <section
         aria-modal="true"
-        className="sheet-panel relative flex h-[calc(100dvh-48px)] w-full max-w-[720px] flex-col overflow-hidden rounded-t-[24px] bg-white"
+        className="sheet-panel relative flex h-[calc(100dvh-48px)] w-full max-w-[390px] flex-col overflow-hidden rounded-t-[24px] bg-white"
         onTouchEnd={() => {
           if (swipeStartY.current === null) return
           swipeStartY.current = null
@@ -923,7 +925,7 @@ function ProductBottomSheet({
       />
       <section
         aria-modal="true"
-        className="sheet-panel relative flex h-[calc(100dvh-48px)] w-full max-w-[720px] flex-col overflow-hidden rounded-t-[24px] bg-white"
+        className="sheet-panel relative flex h-[calc(100dvh-48px)] w-full max-w-[390px] flex-col overflow-hidden rounded-t-[24px] bg-white"
         onTouchEnd={() => {
           if (swipeStartY.current === null) return
           swipeStartY.current = null
@@ -1090,7 +1092,7 @@ function CartBottomSheet({
       />
       <section
         aria-modal="true"
-        className="sheet-panel relative flex h-[calc(100dvh-48px)] w-full max-w-[720px] flex-col overflow-hidden rounded-t-[24px] bg-white"
+        className="sheet-panel relative flex h-[calc(100dvh-48px)] w-full max-w-[390px] flex-col overflow-hidden rounded-t-[24px] bg-white"
         onTouchEnd={() => {
           if (swipeStartY.current === null) return
           swipeStartY.current = null
@@ -1237,17 +1239,33 @@ function CartBottomSheet({
 function MenuScreen({
   cart,
   changeQuantity,
+  onOpenOffers,
 }: {
   cart: Record<string, number>
   changeQuantity: (id: string, delta: number) => void
+  onOpenOffers: () => void
 }) {
   const scrollRef = useRef<HTMLElement>(null)
+  const heroRef = useRef<HTMLDivElement>(null)
   const chipRefs = useRef<Record<string, HTMLButtonElement | null>>({})
   const [activeSection, setActiveSection] = useState("combo")
   const [selectedProduct, setSelectedProduct] = useState<CatalogItem | null>(
     null,
   )
   const [productQuantity, setProductQuantity] = useState(1)
+
+  useEffect(() => {
+    let currentIndex = 0
+    const interval = window.setInterval(() => {
+      const carousel = heroRef.current
+      if (!carousel) return
+      currentIndex = (currentIndex + 1) % 4
+      const card = carousel.children[currentIndex] as HTMLElement | undefined
+      if (!card) return
+      carousel.scrollTo({ left: card.offsetLeft, behavior: "smooth" })
+    }, 8000)
+    return () => window.clearInterval(interval)
+  }, [])
 
   const openProduct = (item: CatalogItem) => {
     setSelectedProduct(item)
@@ -1317,7 +1335,37 @@ function MenuScreen({
           <img alt="" className="h-6 w-6" src={icons.chevron} />
         </button>
       </header>
-      <div className="sticky top-14 z-30 -mx-4 mt-3 bg-white px-4 py-2">
+      <div
+        className="-mx-4 mt-3 flex h-[422px] snap-x overflow-x-auto bg-[#bee5fa] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        ref={heroRef}
+      >
+        <button
+          className="relative h-full w-full shrink-0 snap-start overflow-hidden bg-[#bee5fa] text-left"
+          onClick={onOpenOffers}
+          type="button"
+        >
+          <div className="absolute left-6 right-6 top-12">
+            <div className="relative h-[72px] w-[260px] max-w-full">
+              <img alt="" className="absolute inset-0 h-full w-full" src={icons.bigfestLogo} />
+              <img alt="БИГФЕСТ" className="absolute inset-x-[9%] bottom-[14%] top-[20%] h-auto w-[83%]" src={icons.bigfestWordmark} />
+            </div>
+            <h1 className="mt-7 text-[28px] font-semibold leading-8">Теперь еще больше выгоды!</h1>
+            <span className="mt-4 inline-flex rounded-full bg-white px-4 py-2 text-[14px]">За выгодой</span>
+          </div>
+        </button>
+        {banners.map((banner) => (
+          <article className="relative h-full w-full shrink-0 snap-start overflow-hidden" key={banner}>
+            <img alt="" className="absolute inset-0 h-full w-full object-cover" src={banner} />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/55" />
+            <div className="absolute bottom-24 left-4 right-24 text-white">
+              <p className="text-[16px] leading-5">Попробуй новинки этой зимы</p>
+              <h2 className="mt-1 text-[24px] font-semibold leading-7">Закажи у нас в точке или доставку!</h2>
+            </div>
+          </article>
+        ))}
+      </div>
+      <div className="relative z-20 -mx-4 -mt-[73px] min-h-[calc(100dvh-73px)] overflow-hidden rounded-t-[40px] bg-white pb-3">
+      <div className="sticky top-14 z-30 bg-white px-4 pb-2 pt-5">
         <div className="flex gap-[6px] overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {catalogSections.map(({ id, title }) => (
             <button
@@ -1353,7 +1401,7 @@ function MenuScreen({
         </div>
       </div>
       {catalogSections.map(({ id, title, items }) => (
-        <section className="scroll-mt-12 pt-3" id={id} key={id}>
+        <section className="scroll-mt-12 px-4 pt-3" id={id} key={id}>
           <h1 className="mb-3 text-[16px] font-semibold leading-5">{title}</h1>
           <div className="grid grid-cols-2 gap-2">
             {items.map((item) => (
@@ -1377,12 +1425,13 @@ function MenuScreen({
           setQuantity={setProductQuantity}
         />
       )}
+      </div>
     </section>
   )
 }
 
 export default function App() {
-  const [screen, setScreen] = useState<"home" | "offers" | "menu">("home")
+  const [screen, setScreen] = useState<"home" | "offers" | "menu">("menu")
   const [cart, setCart] = useState<Record<string, number>>({})
   const [cartOpen, setCartOpen] = useState(false)
   const [loadProgress, setLoadProgress] = useState(0)
@@ -1446,7 +1495,7 @@ export default function App() {
 
   return (
     <main className="min-h-dvh bg-white text-[#292929]">
-      <div className="mx-auto flex min-h-dvh w-full max-w-[720px] flex-col">
+      <div className="mx-auto flex min-h-dvh w-full max-w-[390px] flex-col">
         {screen === "home" && (
           <HomeScreen addOffer={(id) => changeQuantity(id, 1)} />
         )}
@@ -1454,11 +1503,15 @@ export default function App() {
           <OffersScreen addOffer={(id) => changeQuantity(id, 1)} />
         )}
         {screen === "menu" && (
-          <MenuScreen cart={cart} changeQuantity={changeQuantity} />
+          <MenuScreen
+            cart={cart}
+            changeQuantity={changeQuantity}
+            onOpenOffers={() => setScreen("offers")}
+          />
         )}
 
         {cartCount > 0 && (
-          <div className="pointer-events-none fixed inset-x-0 bottom-[86px] z-50 mx-auto flex w-full max-w-[720px] justify-end px-4 py-[3px]">
+          <div className="pointer-events-none fixed inset-x-0 bottom-[86px] z-50 mx-auto flex w-full max-w-[390px] justify-end px-4 py-[3px]">
             <button
               className="pointer-events-auto flex h-fit w-fit items-center justify-center gap-x-1.5 gap-y-1 rounded-full bg-[#ff5f00] px-5 py-3 font-semibold leading-4 text-white shadow-[0_0_5.8px_#ff5f00]"
               onClick={() => setCartOpen(true)}
@@ -1472,12 +1525,12 @@ export default function App() {
           </div>
         )}
 
-        <nav className="fixed inset-x-0 bottom-0 z-50 mx-auto flex h-[76px] w-full max-w-[720px] items-start justify-between rounded-t-2xl bg-white px-4 pt-1 shadow-[0_-2px_3px_rgba(0,0,0,.08)]">
+        <nav className="fixed inset-x-0 bottom-0 z-50 mx-auto flex h-[76px] w-full max-w-[390px] items-start justify-between rounded-t-2xl bg-white px-4 pt-1 shadow-[0_-2px_3px_rgba(0,0,0,.08)]">
           <NavItem
-            active={screen === "home"}
-            icon={screen === "home" ? icons.home : icons.homeOff}
-            label="Главная"
-            onClick={() => setScreen("home")}
+            active={screen === "menu"}
+            icon={screen === "menu" ? icons.menuOn : icons.menu}
+            label="Меню"
+            onClick={() => setScreen("menu")}
           />
           <NavItem
             active={screen === "offers"}
@@ -1485,13 +1538,14 @@ export default function App() {
             label="Акции"
             onClick={() => setScreen("offers")}
           />
-          <NavItem
-            active={screen === "menu"}
-            icon={screen === "menu" ? icons.menuOn : icons.menu}
-            label="Меню"
-            onClick={() => setScreen("menu")}
-          />
           <NavItem icon={icons.profile} label="Профиль" />
+          <NavItem
+            badge={cartCount}
+            icon={icons.cartChip}
+            iconClassName="brightness-[.68]"
+            label="Корзина"
+            onClick={() => cartCount > 0 && setCartOpen(true)}
+          />
         </nav>
 
         {cartOpen && cartCount > 0 && (
