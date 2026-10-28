@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
-const A = `assets`
+const A = `${import.meta.env.BASE_URL}assets`
 
 const icons = {
   qr: `${A}/314c7.svg`,
@@ -102,13 +102,25 @@ const catalogSections = [
 
 type CatalogItem = typeof catalogSections[number]["items"][number]
 
-const catalogPrices = Object.fromEntries(
-  catalogSections.flatMap((section) =>
-    section.items.map(([id, , price]) => [
-      id,
-      Number(price.replace(/\D/g, "")),
-    ]),
-  ),
+const offerItems = [
+  ["offer-nuggets", "Наггетсы (6 шт.) всего за 95 рублей", "95 ₽", "ce98a.png"],
+  [
+    "offer-cherry-pie",
+    "Пирожок Вишневый всего за 75 рублей!",
+    "75 ₽",
+    "d6794.png",
+  ],
+  ["offer-small-fries", "Картофель Фри (мал.)", "80 ₽", "29db4.png"],
+] as const
+
+const purchasableItems: ReadonlyArray<readonly [string, string, string, string]> =
+  [...catalogSections.flatMap((section) => section.items), ...offerItems]
+
+const itemPrices = Object.fromEntries(
+  purchasableItems.map(([id, , price]) => [
+    id,
+    Number(price.replace(/\D/g, "")),
+  ]),
 )
 
 const preloadSources = Array.from(
@@ -201,7 +213,7 @@ function AddressHeader() {
   )
 }
 
-function HomeScreen() {
+function HomeScreen({ addOffer }: { addOffer: (id: string) => void }) {
   const carouselRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -360,18 +372,28 @@ function HomeScreen() {
       <h1 className="mb-2 mt-4 text-[24px] font-semibold leading-7">Акции</h1>
       <div className="flex flex-col gap-2">
         <OfferCard
+          id="offer-nuggets"
           image="ce98a.png"
           napkin
+          onAddOffer={addOffer}
           price="95"
           title="Наггетсы (6 шт.) всего за 95 рублей"
         />
         <OfferCard
+          id="offer-cherry-pie"
           image="d6794.png"
           napkin
+          onAddOffer={addOffer}
           price="75"
           title="Пирожок Вишневый всего за 75 рублей!"
         />
-        <OfferCard image="29db4.png" price="80" title="Картофель Фри (мал.)" />
+        <OfferCard
+          id="offer-small-fries"
+          image="29db4.png"
+          onAddOffer={addOffer}
+          price="80"
+          title="Картофель Фри (мал.)"
+        />
       </div>
     </section>
   )
@@ -382,12 +404,14 @@ function OfferBottomSheet({
   price,
   image,
   napkin,
+  onAdd,
   onClose,
 }: {
   title: string
   price: string
   image: string
   napkin: boolean
+  onAdd: () => void
   onClose: () => void
 }) {
   const panelRef = useRef<HTMLElement>(null)
@@ -514,7 +538,10 @@ function OfferBottomSheet({
         <div className="absolute inset-x-0 bottom-0 bg-white px-4 pb-4 pt-3">
           <button
             className="h-13 w-full rounded-full bg-[#ee7203] px-4 text-[16px] leading-5 text-white"
-            onClick={onClose}
+            onClick={() => {
+              onAdd()
+              onClose()
+            }}
             type="button"
           >
             Добавить
@@ -526,15 +553,19 @@ function OfferBottomSheet({
 }
 
 function OfferCard({
+  id,
   title,
   price,
   image,
   napkin = false,
+  onAddOffer,
 }: {
+  id: string
   title: string
   price: string
   image: string
   napkin?: boolean
+  onAddOffer: (id: string) => void
 }) {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -591,6 +622,7 @@ function OfferCard({
         <OfferBottomSheet
           image={image}
           napkin={napkin}
+          onAdd={() => onAddOffer(id)}
           onClose={() => setIsOpen(false)}
           price={price}
           title={title}
@@ -600,7 +632,7 @@ function OfferCard({
   )
 }
 
-function OffersScreen() {
+function OffersScreen({ addOffer }: { addOffer: (id: string) => void }) {
   return (
     <section className="h-dvh flex-none overflow-y-auto px-4 pb-[92px] pt-4">
       <header className="sticky top-0 z-40 flex h-14 gap-2 bg-white before:absolute before:-left-4 before:-right-4 before:-top-4 before:h-4 before:bg-white before:content-['']">
@@ -637,18 +669,28 @@ function OffersScreen() {
       <h1 className="mb-2 mt-2 text-[24px] font-semibold leading-7">Акции</h1>
       <div className="flex flex-col gap-2">
         <OfferCard
+          id="offer-nuggets"
           image="ce98a.png"
           napkin
+          onAddOffer={addOffer}
           price="95"
           title="Наггетсы (6 шт.) всего за 95 рублей"
         />
         <OfferCard
+          id="offer-cherry-pie"
           image="d6794.png"
           napkin
+          onAddOffer={addOffer}
           price="75"
           title="Пирожок Вишневый всего за 75 рублей!"
         />
-        <OfferCard image="29db4.png" price="80" title="Картофель Фри (мал.)" />
+        <OfferCard
+          id="offer-small-fries"
+          image="29db4.png"
+          onAddOffer={addOffer}
+          price="80"
+          title="Картофель Фри (мал.)"
+        />
       </div>
     </section>
   )
@@ -1036,9 +1078,7 @@ function CartBottomSheet({
   const swipeStartY = useRef<number | null>(null)
   const [dragOffset, setDragOffset] = useState(0)
   const [orderComplete, setOrderComplete] = useState(false)
-  const items = catalogSections
-    .flatMap((section) => section.items)
-    .filter(([id]) => (cart[id] ?? 0) > 0)
+  const items = purchasableItems.filter(([id]) => (cart[id] ?? 0) > 0)
 
   return (
     <div className="sheet-overlay fixed inset-0 z-[110] flex items-end justify-center bg-black/40">
@@ -1088,6 +1128,7 @@ function CartBottomSheet({
             const quantity = cart[id] ?? 0
             const unitPrice = Number(price.replace(/\D/g, ""))
             const isCombo = id.endsWith("-combo")
+            const isOffer = id.startsWith("offer-")
 
             return (
               <article
@@ -1103,13 +1144,20 @@ function CartBottomSheet({
                   <h2 className="text-[16px] font-semibold leading-5">
                     {title}
                   </h2>
-                  <button
-                    className="flex items-center gap-1 text-left text-[14px] leading-4"
-                    type="button"
-                  >
-                    <img alt="" src={`${A}/d89a3.svg`} />
-                    Изменить ингредиенты
-                  </button>
+                  {!isOffer && (
+                    <button
+                      className="flex items-center gap-1 text-left text-[14px] leading-4"
+                      type="button"
+                    >
+                      <img alt="" src={`${A}/d89a3.svg`} />
+                      Изменить ингредиенты
+                    </button>
+                  )}
+                  {isOffer && (
+                    <p className="text-[14px] leading-4 text-[#777]">
+                      Акционная цена
+                    </p>
+                  )}
                   {isCombo && (
                     <button
                       className="flex items-center gap-1 text-left text-[14px] leading-4"
@@ -1344,7 +1392,7 @@ export default function App() {
     0,
   )
   const cartTotal = Object.entries(cart).reduce(
-    (total, [id, quantity]) => total + (catalogPrices[id] ?? 0) * quantity,
+    (total, [id, quantity]) => total + (itemPrices[id] ?? 0) * quantity,
     0,
   )
 
@@ -1399,8 +1447,12 @@ export default function App() {
   return (
     <main className="min-h-dvh bg-white text-[#292929]">
       <div className="mx-auto flex min-h-dvh w-full max-w-[720px] flex-col">
-        {screen === "home" && <HomeScreen />}
-        {screen === "offers" && <OffersScreen />}
+        {screen === "home" && (
+          <HomeScreen addOffer={(id) => changeQuantity(id, 1)} />
+        )}
+        {screen === "offers" && (
+          <OffersScreen addOffer={(id) => changeQuantity(id, 1)} />
+        )}
         {screen === "menu" && (
           <MenuScreen cart={cart} changeQuantity={changeQuantity} />
         )}
