@@ -1325,7 +1325,7 @@ function MenuScreen({
       ref={scrollRef}
     >
       <header
-        className={`sticky top-[env(safe-area-inset-top)] z-40 -mx-4 flex h-14 px-3 transition-[background-color,box-shadow] duration-200 ${
+        className={`sticky top-[calc(env(safe-area-inset-top)+16px)] z-40 -mx-4 flex h-14 px-3 transition-[background-color,box-shadow] duration-200 ${
           filtersPinned
             ? "bg-white shadow-[0_4px_12px_rgba(0,0,0,.06)]"
             : "bg-transparent"
@@ -1386,7 +1386,7 @@ function MenuScreen({
       </div>
       <div className="relative z-20 -mx-4 -mt-[73px] min-h-[calc(100dvh-73px)] rounded-t-[40px] bg-white pb-3">
       <div
-        className={`sticky top-[68px] z-30 rounded-t-[40px] bg-white px-2 pb-2 pt-2 transition-shadow duration-200 ${
+        className={`sticky top-[calc(env(safe-area-inset-top)+84px)] z-30 overflow-hidden rounded-t-[40px] bg-white px-4 pb-2 pt-[18px] transition-shadow duration-200 ${
           filtersPinned ? "shadow-[0_5px_12px_rgba(0,0,0,.08)]" : ""
         }`}
       >
