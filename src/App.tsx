@@ -1249,6 +1249,7 @@ function MenuScreen({
   const heroRef = useRef<HTMLDivElement>(null)
   const chipRefs = useRef<Record<string, HTMLButtonElement | null>>({})
   const [activeSection, setActiveSection] = useState("combo")
+  const [filtersPinned, setFiltersPinned] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<CatalogItem | null>(
     null,
   )
@@ -1314,9 +1315,18 @@ function MenuScreen({
   return (
     <section
       className="h-dvh flex-none overflow-y-auto px-4 pb-[92px] pt-4"
+      onScroll={(event) => {
+        setFiltersPinned(event.currentTarget.scrollTop >= 280)
+      }}
       ref={scrollRef}
     >
-      <header className="sticky top-0 z-40 flex h-14 gap-2 bg-white before:absolute before:-left-4 before:-right-4 before:-top-4 before:h-4 before:bg-white before:content-['']">
+      <header
+        className={`sticky top-0 z-40 -mx-4 flex h-14 gap-2 px-4 transition-[background-color,box-shadow] duration-200 ${
+          filtersPinned
+            ? "bg-white shadow-[0_4px_12px_rgba(0,0,0,.06)]"
+            : "bg-transparent"
+        }`}
+      >
         <button
           aria-label="Открыть QR-код"
           className="flex w-14 shrink-0 items-center justify-center rounded-2xl bg-[#f9f9f9]"
@@ -1336,7 +1346,7 @@ function MenuScreen({
         </button>
       </header>
       <div
-        className="-mx-4 mt-3 flex h-[422px] snap-x overflow-x-auto bg-[#bee5fa] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="-mx-4 -mt-14 flex h-[422px] snap-x overflow-x-auto bg-[#bee5fa] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         ref={heroRef}
       >
         <button
@@ -1364,8 +1374,12 @@ function MenuScreen({
           </article>
         ))}
       </div>
-      <div className="relative z-20 -mx-4 -mt-[73px] min-h-[calc(100dvh-73px)] overflow-hidden rounded-t-[40px] bg-white pb-3">
-      <div className="sticky top-14 z-30 bg-white px-4 pb-2 pt-5">
+      <div className="relative z-20 -mx-4 -mt-[73px] min-h-[calc(100dvh-73px)] rounded-t-[40px] bg-white pb-3">
+      <div
+        className={`sticky top-[68px] z-30 rounded-t-[40px] bg-white px-3 pb-2 pt-0 transition-shadow duration-200 ${
+          filtersPinned ? "shadow-[0_5px_12px_rgba(0,0,0,.08)]" : ""
+        }`}
+      >
         <div className="flex gap-[6px] overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {catalogSections.map(({ id, title }) => (
             <button
