@@ -1318,7 +1318,7 @@ function MenuScreen({
 
   return (
     <section
-      className="h-dvh flex-none overflow-y-auto px-4 pb-[92px] pt-4"
+      className="h-dvh flex-none overflow-y-auto px-4 pb-[92px] pt-0"
       onScroll={(event) => {
         setFiltersPinned(event.currentTarget.scrollTop >= 280)
       }}
