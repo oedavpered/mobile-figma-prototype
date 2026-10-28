@@ -1318,14 +1318,14 @@ function MenuScreen({
 
   return (
     <section
-      className="h-dvh flex-none overflow-y-auto px-4 pb-[92px] pt-0"
+      className="h-dvh flex-none overflow-y-auto px-4 pb-[92px] pt-[env(safe-area-inset-top)]"
       onScroll={(event) => {
         setFiltersPinned(event.currentTarget.scrollTop >= 280)
       }}
       ref={scrollRef}
     >
       <header
-        className={`sticky top-0 z-40 -mx-4 flex h-14 px-3 transition-[background-color,box-shadow] duration-200 ${
+        className={`sticky top-[env(safe-area-inset-top)] z-40 -mx-4 flex h-14 px-3 transition-[background-color,box-shadow] duration-200 ${
           filtersPinned
             ? "bg-white shadow-[0_4px_12px_rgba(0,0,0,.06)]"
             : "bg-transparent"
@@ -1343,14 +1343,20 @@ function MenuScreen({
           <img alt="" className="h-5 w-[10px] shrink-0" src={icons.chevron} />
         </button>
         {filtersPinned && (
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-full h-3 bg-white"
-          />
+          <>
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 top-full h-3 bg-white"
+            />
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 bottom-full h-[env(safe-area-inset-top)] bg-white"
+            />
+          </>
         )}
       </header>
       <div
-        className="-mx-4 -mt-14 flex h-[422px] snap-x overflow-x-auto bg-[#bee5fa] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="-mx-4 -mt-[calc(3.5rem+env(safe-area-inset-top))] flex h-[calc(422px+env(safe-area-inset-top))] snap-x overflow-x-auto bg-[#bee5fa] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         ref={heroRef}
       >
         <button
