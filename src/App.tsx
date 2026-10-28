@@ -1344,6 +1344,12 @@ function MenuScreen({
           </span>
           <img alt="" className="h-6 w-6" src={icons.chevron} />
         </button>
+        {filtersPinned && (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-full h-3 bg-white"
+          />
+        )}
       </header>
       <div
         className="-mx-4 -mt-14 flex h-[422px] snap-x overflow-x-auto bg-[#bee5fa] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
