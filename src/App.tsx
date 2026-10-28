@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 
 const A = `${import.meta.env.BASE_URL}assets`
 
@@ -420,7 +421,7 @@ function OfferBottomSheet({
   const swipeStartY = useRef<number | null>(null)
   const [dragOffset, setDragOffset] = useState(0)
 
-  return (
+  return createPortal(
     <div className="sheet-overlay fixed inset-0 z-[110] flex items-end justify-center bg-black/40">
       <button
         aria-label="Закрыть акцию"
@@ -550,7 +551,8 @@ function OfferBottomSheet({
           </button>
         </div>
       </section>
-    </div>
+    </div>,
+    document.body,
   )
 }
 
@@ -915,7 +917,7 @@ function ProductBottomSheet({
           ? `${title} дополнит блюдо насыщенным вкусом и сделает каждый кусочек ещё аппетитнее.`
           : `${title} приготовлен из отборных ингредиентов и подаётся специально для сытного перекуса.`
 
-  return (
+  return createPortal(
     <div className="sheet-overlay fixed inset-0 z-[100] flex items-end justify-center bg-black/40">
       <button
         aria-label="Закрыть"
@@ -1061,7 +1063,8 @@ function ProductBottomSheet({
           </button>
         </div>
       </section>
-    </div>
+    </div>,
+    document.body,
   )
 }
 
@@ -1082,7 +1085,7 @@ function CartBottomSheet({
   const [orderComplete, setOrderComplete] = useState(false)
   const items = purchasableItems.filter(([id]) => (cart[id] ?? 0) > 0)
 
-  return (
+  return createPortal(
     <div className="sheet-overlay fixed inset-0 z-[110] flex items-end justify-center bg-black/40">
       <button
         aria-label="Закрыть корзину"
@@ -1232,7 +1235,8 @@ function CartBottomSheet({
           </div>
         )}
       </section>
-    </div>
+    </div>,
+    document.body,
   )
 }
 
@@ -1321,28 +1325,22 @@ function MenuScreen({
       ref={scrollRef}
     >
       <header
-        className={`sticky top-0 z-40 -mx-4 flex h-14 gap-2 px-4 transition-[background-color,box-shadow] duration-200 ${
+        className={`sticky top-0 z-40 -mx-4 flex h-14 px-3 transition-[background-color,box-shadow] duration-200 ${
           filtersPinned
             ? "bg-white shadow-[0_4px_12px_rgba(0,0,0,.06)]"
             : "bg-transparent"
         }`}
       >
         <button
-          aria-label="Открыть QR-код"
-          className="flex w-14 shrink-0 items-center justify-center rounded-2xl bg-[#f9f9f9]"
+          className="flex min-w-0 flex-1 items-center gap-3 rounded-2xl bg-[#f9f9f9] px-3 text-left"
           type="button"
         >
-          <img alt="" className="h-12 w-12" src={icons.qr} />
-        </button>
-        <button
-          className="flex min-w-0 flex-1 items-center rounded-2xl bg-[#f9f9f9] px-4 text-left"
-          type="button"
-        >
-          <span className="min-w-0 flex-1 text-[14px] leading-4">
+          <img alt="QR-код" className="h-8 w-8 shrink-0" src={icons.qr} />
+          <span className="min-w-0 flex-1 text-[13px] leading-[15px]">
             <strong className="block font-semibold">В предприятии</strong>
             <span className="block truncate">ул. Новодмитровская, 77с2</span>
           </span>
-          <img alt="" className="h-6 w-6" src={icons.chevron} />
+          <img alt="" className="h-5 w-[10px] shrink-0" src={icons.chevron} />
         </button>
         {filtersPinned && (
           <span
@@ -1382,14 +1380,14 @@ function MenuScreen({
       </div>
       <div className="relative z-20 -mx-4 -mt-[73px] min-h-[calc(100dvh-73px)] rounded-t-[40px] bg-white pb-3">
       <div
-        className={`sticky top-[68px] z-30 rounded-t-[40px] bg-white px-3 pb-2 pt-0 transition-shadow duration-200 ${
+        className={`sticky top-[68px] z-30 rounded-t-[40px] bg-white px-2 pb-2 pt-2 transition-shadow duration-200 ${
           filtersPinned ? "shadow-[0_5px_12px_rgba(0,0,0,.08)]" : ""
         }`}
       >
         <div className="flex gap-[6px] overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {catalogSections.map(({ id, title }) => (
             <button
-              className={`h-8 shrink-0 rounded-full px-3 text-[14px] leading-4 ${
+              className={`h-8 shrink-0 rounded-full px-3 text-[12px] font-medium leading-4 ${
                 activeSection === id
                   ? "bg-[#ee7203] text-white"
                   : "bg-[#f4f4f4] text-[#292929]"
@@ -1545,7 +1543,7 @@ export default function App() {
           </div>
         )}
 
-        <nav className="fixed inset-x-0 bottom-0 z-50 mx-auto flex h-[76px] w-full max-w-[390px] items-start justify-between rounded-t-2xl bg-white px-4 pt-1 shadow-[0_-2px_3px_rgba(0,0,0,.08)]">
+        <nav className="fixed inset-x-0 bottom-0 z-50 mx-auto flex h-[76px] w-full max-w-[390px] items-start justify-between rounded-t-[36px] bg-white px-[46px] pt-1 shadow-[0_-2px_3px_rgba(0,0,0,.08)]">
           <NavItem
             active={screen === "menu"}
             icon={screen === "menu" ? icons.menuOn : icons.menu}
@@ -1559,13 +1557,6 @@ export default function App() {
             onClick={() => setScreen("offers")}
           />
           <NavItem icon={icons.profile} label="Профиль" />
-          <NavItem
-            badge={cartCount}
-            icon={icons.cartChip}
-            iconClassName="brightness-[.68]"
-            label="Корзина"
-            onClick={() => cartCount > 0 && setCartOpen(true)}
-          />
         </nav>
 
         {cartOpen && cartCount > 0 && (
