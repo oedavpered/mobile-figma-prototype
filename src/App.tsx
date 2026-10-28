@@ -1422,6 +1422,7 @@ function MenuScreen({
               {title}
             </button>
           ))}
+          <span aria-hidden="true" className="w-4 shrink-0" />
         </div>
       </div>
       {catalogSections.map(({ id, title, items }) => (
