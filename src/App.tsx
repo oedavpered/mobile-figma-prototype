@@ -431,7 +431,7 @@ function OfferBottomSheet({
       />
       <section
         aria-modal="true"
-        className="sheet-panel relative flex h-[calc(100dvh-48px)] w-full max-w-[390px] flex-col overflow-hidden rounded-t-[24px] bg-white"
+        className="sheet-panel relative flex h-[calc(100dvh-48px)] w-full flex-col overflow-hidden rounded-t-[24px] bg-white"
         onTouchEnd={() => {
           if (swipeStartY.current === null) return
           swipeStartY.current = null
@@ -927,7 +927,7 @@ function ProductBottomSheet({
       />
       <section
         aria-modal="true"
-        className="sheet-panel relative flex h-[calc(100dvh-48px)] w-full max-w-[390px] flex-col overflow-hidden rounded-t-[24px] bg-white"
+        className="sheet-panel relative flex h-[calc(100dvh-48px)] w-full flex-col overflow-hidden rounded-t-[24px] bg-white"
         onTouchEnd={() => {
           if (swipeStartY.current === null) return
           swipeStartY.current = null
@@ -1095,7 +1095,7 @@ function CartBottomSheet({
       />
       <section
         aria-modal="true"
-        className="sheet-panel relative flex h-[calc(100dvh-48px)] w-full max-w-[390px] flex-col overflow-hidden rounded-t-[24px] bg-white"
+        className="sheet-panel relative flex h-[calc(100dvh-48px)] w-full flex-col overflow-hidden rounded-t-[24px] bg-white"
         onTouchEnd={() => {
           if (swipeStartY.current === null) return
           swipeStartY.current = null
@@ -1328,7 +1328,7 @@ function MenuScreen({
         createPortal(
           <div
             aria-hidden="true"
-            className="pointer-events-none fixed inset-x-0 top-0 z-[90] mx-auto h-[calc(env(safe-area-inset-top)+142px)] w-full max-w-[390px] bg-white shadow-[0_5px_12px_rgba(0,0,0,.08)]"
+            className="pointer-events-none fixed inset-x-0 top-0 z-[90] h-[calc(env(safe-area-inset-top)+142px)] w-full bg-white shadow-[0_5px_12px_rgba(0,0,0,.08)]"
           />,
           document.body,
         )}
@@ -1528,7 +1528,7 @@ export default function App() {
 
   return (
     <main className="min-h-dvh bg-white text-[#292929]">
-      <div className="mx-auto flex min-h-dvh w-full max-w-[390px] flex-col">
+      <div className="flex min-h-dvh w-full flex-col">
         {screen === "home" && (
           <HomeScreen addOffer={(id) => changeQuantity(id, 1)} />
         )}
@@ -1544,7 +1544,7 @@ export default function App() {
         )}
 
         {cartCount > 0 && (
-          <div className="pointer-events-none fixed inset-x-0 bottom-[86px] z-50 mx-auto flex w-full max-w-[390px] justify-end px-4 py-[3px]">
+          <div className="pointer-events-none fixed inset-x-0 bottom-[86px] z-50 flex w-full justify-end px-4 py-[3px]">
             <button
               className="pointer-events-auto flex h-fit w-fit items-center justify-center gap-x-1.5 gap-y-1 rounded-full bg-[#ff5f00] px-5 py-3 font-semibold leading-4 text-white shadow-[0_0_5.8px_#ff5f00]"
               onClick={() => setCartOpen(true)}
@@ -1558,7 +1558,7 @@ export default function App() {
           </div>
         )}
 
-        <nav className="fixed inset-x-0 bottom-0 z-50 mx-auto flex h-[76px] w-full max-w-[390px] items-start justify-between rounded-t-[36px] bg-white px-[46px] pt-1 shadow-[0_-2px_3px_rgba(0,0,0,.08)]">
+        <nav className="fixed inset-x-0 bottom-0 z-50 flex h-[76px] w-full items-start justify-between rounded-t-[36px] bg-white px-[46px] pt-1 shadow-[0_-2px_3px_rgba(0,0,0,.08)]">
           <NavItem
             active={screen === "menu"}
             icon={screen === "menu" ? icons.menuOn : icons.menu}
