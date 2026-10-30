@@ -1249,11 +1249,9 @@ function CartBottomSheet({
 function MenuScreen({
   cart,
   changeQuantity,
-  onOpenOffers,
 }: {
   cart: Record<string, number>
   changeQuantity: (id: string, delta: number) => void
-  onOpenOffers: () => void
 }) {
   const scrollRef = useRef<HTMLElement>(null)
   const heroRef = useRef<HTMLDivElement>(null)
@@ -1373,20 +1371,6 @@ function MenuScreen({
         className="-mt-[calc(3.5rem+env(safe-area-inset-top))] flex h-[calc(422px+env(safe-area-inset-top))] snap-x overflow-x-auto bg-[#bee5fa] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         ref={heroRef}
       >
-        <button
-          className="relative h-full w-full shrink-0 snap-start overflow-hidden bg-[#bee5fa] text-left"
-          onClick={onOpenOffers}
-          type="button"
-        >
-          <div className="absolute left-6 right-6 top-12">
-            <div className="relative h-[72px] w-[260px] max-w-full">
-              <img alt="" className="absolute inset-0 h-full w-full" src={icons.bigfestLogo} />
-              <img alt="БИГФЕСТ" className="absolute inset-x-[9%] bottom-[14%] top-[20%] h-auto w-[83%]" src={icons.bigfestWordmark} />
-            </div>
-            <h1 className="mt-7 text-[28px] font-semibold leading-8">Теперь еще больше выгоды!</h1>
-            <span className="mt-4 inline-flex rounded-full bg-white px-4 py-2 text-[14px]">За выгодой</span>
-          </div>
-        </button>
         {banners.map((banner) => (
           <article className="relative h-full w-full shrink-0 snap-start overflow-hidden" key={banner}>
             <img alt="" className="absolute inset-0 h-full w-full object-cover" src={banner} />
@@ -1545,7 +1529,6 @@ export default function App() {
           <MenuScreen
             cart={cart}
             changeQuantity={changeQuantity}
-            onOpenOffers={() => setScreen("offers")}
           />
         )}
 
