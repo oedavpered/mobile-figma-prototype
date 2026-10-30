@@ -1324,10 +1324,18 @@ function MenuScreen({
       }}
       ref={scrollRef}
     >
+      {filtersPinned &&
+        createPortal(
+          <div
+            aria-hidden="true"
+            className="pointer-events-none fixed inset-x-0 top-0 z-[90] mx-auto h-[calc(env(safe-area-inset-top)+142px)] w-full max-w-[390px] bg-white shadow-[0_5px_12px_rgba(0,0,0,.08)]"
+          />,
+          document.body,
+        )}
       <header
-        className={`sticky top-[calc(env(safe-area-inset-top)+16px)] z-40 -mx-4 flex h-14 px-3 transition-[background-color,box-shadow] duration-200 ${
+        className={`sticky top-[calc(env(safe-area-inset-top)+16px)] z-[95] -mx-4 flex h-14 px-3 transition-[background-color,box-shadow] duration-200 ${
           filtersPinned
-            ? "bg-white shadow-[0_4px_12px_rgba(0,0,0,.06)]"
+            ? "bg-transparent"
             : "bg-transparent"
         }`}
       >
@@ -1350,7 +1358,7 @@ function MenuScreen({
             />
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-full h-[env(safe-area-inset-top)] bg-white"
+              className="pointer-events-none absolute inset-x-0 bottom-full h-[calc(env(safe-area-inset-top)+16px)] bg-white"
             />
           </>
         )}
@@ -1386,8 +1394,8 @@ function MenuScreen({
       </div>
       <div className="relative z-20 -mx-4 -mt-[73px] min-h-[calc(100dvh-73px)] rounded-t-[40px] bg-white pb-3">
       <div
-        className={`sticky top-[calc(env(safe-area-inset-top)+84px)] z-30 overflow-hidden rounded-t-[40px] bg-white px-4 pb-2 pt-[18px] transition-shadow duration-200 ${
-          filtersPinned ? "shadow-[0_5px_12px_rgba(0,0,0,.08)]" : ""
+        className={`sticky top-[calc(env(safe-area-inset-top)+84px)] z-[95] overflow-hidden bg-white px-4 pb-2 pt-[18px] transition-[border-radius] duration-200 ${
+          filtersPinned ? "rounded-none" : "rounded-t-[40px]"
         }`}
       >
         <div className="flex gap-[6px] overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
