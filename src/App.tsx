@@ -173,21 +173,27 @@ function NavItem({
 }) {
   return (
     <button
-      className={`flex min-w-0 flex-1 flex-col items-center justify-center py-1 ${
-        active ? "font-semibold text-[#264f36]" : "text-[#adadad]"
+      className={`flex min-w-0 items-center justify-center transition-colors ${
+        active
+          ? "h-12 flex-none flex-row gap-2 rounded-full bg-[#264f36] px-5 font-semibold text-white"
+          : "h-12 flex-1 text-[#adadad]"
       }`}
       onClick={onClick}
       type="button"
     >
-      <span className="relative flex h-8 w-8 items-center justify-center">
-        <img alt="" className={iconClassName} src={icon} />
+      <span className="relative flex h-8 w-8 shrink-0 items-center justify-center">
+        <img
+          alt=""
+          className={`${iconClassName} ${active ? "brightness-0 invert" : ""}`}
+          src={icon}
+        />
         {!!badge && (
           <span className="absolute -right-1 -top-0.5 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-[#ee7203] px-1 text-[10px] font-semibold leading-4 text-white">
             {badge > 99 ? "99+" : badge}
           </span>
         )}
       </span>
-      <span className="text-[12px] leading-[14px]">{label}</span>
+      {active && <span className="text-[14px] leading-4">{label}</span>}
     </button>
   )
 }
@@ -1558,7 +1564,7 @@ export default function App() {
           </div>
         )}
 
-        <nav className="fixed inset-x-0 bottom-0 z-50 flex h-[76px] w-full items-start justify-between rounded-t-[36px] bg-white px-[46px] pt-1 shadow-[0_-2px_3px_rgba(0,0,0,.08)]">
+        <nav className="fixed inset-x-4 bottom-[max(8px,env(safe-area-inset-bottom))] z-50 flex h-16 items-center justify-between rounded-[32px] bg-white px-3 shadow-[0_0_12px_rgba(0,0,0,.12)]">
           <NavItem
             active={screen === "menu"}
             icon={screen === "menu" ? icons.menuOn : icons.menu}
