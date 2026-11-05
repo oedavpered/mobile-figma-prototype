@@ -26,6 +26,7 @@ const icons = {
   plusWhite: `${A}/3c100.svg`,
   homeOff: `${A}/93cec.svg`,
   menuOn: `${A}/cf2ce.svg`,
+  bigfestMenuBanner: `${A}/bigfest-menu-banner.png`,
 }
 
 const banners = [`${A}/be510.png`, `${A}/54062.png`, `${A}/b6e66.png`]
@@ -1423,6 +1424,13 @@ function MenuScreen({
           <span aria-hidden="true" className="w-4 shrink-0" />
         </div>
       </div>
+      {!filtersPinned && (
+        <img
+          alt="Участвуй в Бигфесте — выигрывай призы"
+          className="mx-4 mt-1 block h-auto w-[calc(100%-2rem)] rounded-2xl"
+          src={icons.bigfestMenuBanner}
+        />
+      )}
       {catalogSections.map(({ id, title, items }) => (
         <section className="scroll-mt-12 px-4 pt-3" id={id} key={id}>
           <h1 className="mb-3 text-[16px] font-semibold leading-5">{title}</h1>
