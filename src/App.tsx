@@ -1383,7 +1383,11 @@ function MenuScreen({
           </article>
         ))}
       </div>
-      <div className="relative z-20 -mt-[73px] min-h-[calc(100dvh-73px)] rounded-t-[40px] bg-white pb-3">
+      <div
+        className={`relative -mt-[73px] min-h-[calc(100dvh-73px)] rounded-t-[40px] bg-white pb-3 ${
+          filtersPinned ? "z-auto" : "z-20"
+        }`}
+      >
       <div
         className={`sticky top-[calc(env(safe-area-inset-top)+84px)] z-[95] overflow-hidden bg-white px-4 pb-2 pt-[18px] transition-[border-radius] duration-200 ${
           filtersPinned ? "rounded-none" : "rounded-t-[40px]"
