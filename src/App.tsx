@@ -1333,7 +1333,7 @@ function MenuScreen({
         createPortal(
           <div
             aria-hidden="true"
-            className="pointer-events-none fixed inset-x-0 top-0 z-[90] h-[calc(env(safe-area-inset-top)+142px)] w-full bg-white shadow-[0_5px_12px_rgba(0,0,0,.08)]"
+            className="pointer-events-none fixed inset-x-0 top-0 z-[90] h-[calc(env(safe-area-inset-top)+132px)] w-full bg-white shadow-[0_5px_12px_rgba(0,0,0,.08)]"
           />,
           document.body,
         )}
@@ -1389,7 +1389,7 @@ function MenuScreen({
         }`}
       >
       <div
-        className={`sticky top-[calc(env(safe-area-inset-top)+84px)] z-[95] overflow-hidden bg-white px-4 pb-2 pt-[18px] transition-[border-radius] duration-200 ${
+        className={`sticky top-[calc(env(safe-area-inset-top)+72px)] z-[95] overflow-hidden bg-white px-4 pb-2 pt-3 transition-[border-radius] duration-200 ${
           filtersPinned ? "rounded-none" : "rounded-t-[40px]"
         }`}
       >
