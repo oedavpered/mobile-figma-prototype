@@ -1743,38 +1743,32 @@ function MenuScreen({
           document.body,
         )}
       <header
-        className={`sticky top-[calc(env(safe-area-inset-top)+16px)] z-[95] flex h-14 px-3 transition-[background-color,box-shadow] duration-200 ${
+        className={`sticky top-[calc(env(safe-area-inset-top)+16px)] z-[95] flex h-14 gap-2 px-4 transition-[background-color,box-shadow] duration-200 ${
           filtersPinned
             ? "bg-transparent"
             : "bg-transparent"
         }`}
       >
-        <div className="flex min-w-0 flex-1 items-center rounded-2xl bg-[#f9f9f9] px-3">
-          <button
-            aria-label="Открыть QR-код"
-            className="flex h-10 w-10 shrink-0 items-center justify-start"
-            onClick={onOpenQr}
-            type="button"
-          >
-            <img alt="" className="h-8 w-8" src={icons.qr} />
-          </button>
-          <button
-            className="flex min-w-0 flex-1 items-center gap-3 text-left"
-            type="button"
-          >
-            <span className="min-w-0 flex-1 text-[13px] leading-[15px]">
-              <strong className="block font-semibold">В предприятии</strong>
-              <span className="block truncate">
-                ул. Новодмитровская, 77с2
-              </span>
+        <button
+          aria-label="Открыть QR-код"
+          className="flex w-14 shrink-0 items-center justify-center rounded-2xl bg-[#f9f9f9] p-1"
+          onClick={onOpenQr}
+          type="button"
+        >
+          <img alt="" className="h-12 w-12" src={icons.qr} />
+        </button>
+        <button
+          className="flex min-w-0 flex-1 items-center rounded-2xl bg-[#f9f9f9] py-3 pl-4 pr-3 text-left"
+          type="button"
+        >
+          <span className="min-w-0 flex-1 text-[14px] leading-4">
+            <strong className="block font-semibold">В предприятии</strong>
+            <span className="block truncate">
+              ул. Новодмитровская, 77с2
             </span>
-            <img
-              alt=""
-              className="h-5 w-[10px] shrink-0"
-              src={icons.chevron}
-            />
-          </button>
-        </div>
+          </span>
+          <img alt="" className="h-6 w-6 shrink-0" src={icons.chevron} />
+        </button>
         {filtersPinned && (
           <>
             <span
