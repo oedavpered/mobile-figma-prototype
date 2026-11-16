@@ -980,12 +980,13 @@ function SearchBottomSheet({
   const swipeStartY = useRef<number | null>(null)
   const [dragOffset, setDragOffset] = useState(0)
   const [query, setQuery] = useState("")
-  const [activeCategory, setActiveCategory] = useState("all")
+  const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [selectedProduct, setSelectedProduct] = useState<CatalogItem | null>(
     null,
   )
   const [productQuantity, setProductQuantity] = useState(1)
   const normalizedQuery = query.trim().toLocaleLowerCase("ru")
+  const hasSearchIntent = !!normalizedQuery || activeCategory !== null
   const categories = [
     ["all", "Все"],
     ...catalogSections.map(({ id, title }) => [id, title] as const),
@@ -1141,7 +1142,7 @@ function SearchBottomSheet({
           )}
 
           <div className="mt-3 min-h-0 flex-1 overflow-y-auto pb-[max(24px,env(safe-area-inset-bottom))]">
-            {results.length ? (
+            {!hasSearchIntent ? null : results.length ? (
               <div className="grid grid-cols-2 gap-2">
                 {results.map(({ item }) => (
                   <SearchProductCard
