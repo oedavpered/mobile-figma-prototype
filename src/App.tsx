@@ -884,15 +884,25 @@ function SearchProductCard({
   item,
   count,
   changeQuantity,
+  openProduct,
 }: {
   item: CatalogItem
   count: number
   changeQuantity: (id: string, delta: number) => void
+  openProduct: (item: CatalogItem) => void
 }) {
   const [id, title, price, image] = item
 
   return (
-    <article className="flex h-[252px] min-w-0 flex-col items-center justify-between rounded-2xl bg-[#f9f9f9] px-[14px] pb-[14px]">
+    <article
+      className="flex h-[252px] min-w-0 cursor-pointer flex-col items-center justify-between rounded-2xl bg-[#f9f9f9] px-[14px] pb-[14px]"
+      onClick={() => openProduct(item)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") openProduct(item)
+      }}
+      role="button"
+      tabIndex={0}
+    >
       <div className="flex w-full flex-col items-center">
         <div className="relative h-[138px] w-[138px] overflow-hidden">
           <img
@@ -912,7 +922,10 @@ function SearchProductCard({
             <button
               aria-label={`Уменьшить количество: ${title}`}
               className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#e9e9e9]"
-              onClick={() => changeQuantity(id, -1)}
+              onClick={(event) => {
+                event.stopPropagation()
+                changeQuantity(id, -1)
+              }}
               type="button"
             >
               <img alt="" src={icons.minus} />
@@ -923,7 +936,10 @@ function SearchProductCard({
             <button
               aria-label={`Увеличить количество: ${title}`}
               className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#e9e9e9]"
-              onClick={() => changeQuantity(id, 1)}
+              onClick={(event) => {
+                event.stopPropagation()
+                openProduct(item)
+              }}
               type="button"
             >
               <img alt="" src={icons.plus} />
@@ -936,7 +952,10 @@ function SearchProductCard({
           <button
             aria-label={`Добавить в корзину: ${title}`}
             className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#ee7203]"
-            onClick={() => changeQuantity(id, 1)}
+            onClick={(event) => {
+              event.stopPropagation()
+              openProduct(item)
+            }}
             type="button"
           >
             <img alt="" src={icons.plusWhite} />
@@ -962,6 +981,10 @@ function SearchBottomSheet({
   const [dragOffset, setDragOffset] = useState(0)
   const [query, setQuery] = useState("")
   const [activeCategory, setActiveCategory] = useState("all")
+  const [selectedProduct, setSelectedProduct] = useState<CatalogItem | null>(
+    null,
+  )
+  const [productQuantity, setProductQuantity] = useState(1)
   const normalizedQuery = query.trim().toLocaleLowerCase("ru")
   const categories = [
     ["all", "Все"],
@@ -972,7 +995,9 @@ function SearchBottomSheet({
   )
   const results = searchableItems.filter(({ item, sectionId }) => {
     const matchesCategory =
-      activeCategory === "all" || activeCategory === sectionId
+      !!normalizedQuery ||
+      activeCategory === "all" ||
+      activeCategory === sectionId
     const matchesQuery =
       !normalizedQuery ||
       item[1].toLocaleLowerCase("ru").includes(normalizedQuery)
@@ -986,6 +1011,18 @@ function SearchBottomSheet({
         .slice(0, 5)
         .map(({ item }) => item[1])
     : []
+
+  const openProduct = (item: CatalogItem) => {
+    setSelectedProduct(item)
+    setProductQuantity(Math.max(1, cart[item[0]] ?? 1))
+  }
+
+  const addProduct = () => {
+    if (!selectedProduct) return
+    const id = selectedProduct[0]
+    changeQuantity(id, productQuantity - (cart[id] ?? 0))
+    setSelectedProduct(null)
+  }
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow
@@ -1068,25 +1105,25 @@ function SearchBottomSheet({
             )}
           </label>
 
-          <div className="mt-3 flex shrink-0 gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {categories.map(([id, title]) => (
-              <button
-                className={`h-8 shrink-0 rounded-full px-3 text-[14px] leading-4 ${
-                  activeCategory === id
-                    ? "bg-[#ee7203] text-white"
-                    : "bg-[#f4f4f4] text-[#292929]"
-                }`}
-                key={id}
-                onClick={() => setActiveCategory(id)}
-                type="button"
-              >
-                {title}
-              </button>
-            ))}
-          </div>
-
-          {!!suggestions.length && (
-            <div className="mt-2 flex shrink-0 flex-wrap gap-2">
+          {!normalizedQuery ? (
+            <div className="mt-3 flex shrink-0 gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {categories.map(([id, title]) => (
+                <button
+                  className={`h-8 shrink-0 rounded-full px-3 text-[14px] leading-4 ${
+                    activeCategory === id
+                      ? "bg-[#ee7203] text-white"
+                      : "bg-[#f4f4f4] text-[#292929]"
+                  }`}
+                  key={id}
+                  onClick={() => setActiveCategory(id)}
+                  type="button"
+                >
+                  {title}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-3 flex shrink-0 flex-wrap gap-2">
               {suggestions.map((suggestion) => (
                 <button
                   className="h-8 rounded-full bg-[#f4f4f4] px-3 text-[14px] leading-4"
@@ -1112,6 +1149,7 @@ function SearchBottomSheet({
                     count={cart[item[0]] ?? 0}
                     item={item}
                     key={item[0]}
+                    openProduct={openProduct}
                   />
                 ))}
               </div>
@@ -1127,6 +1165,15 @@ function SearchBottomSheet({
             )}
           </div>
         </div>
+        {selectedProduct && (
+          <ProductBottomSheet
+            item={selectedProduct}
+            onAdd={addProduct}
+            onClose={() => setSelectedProduct(null)}
+            quantity={productQuantity}
+            setQuantity={setProductQuantity}
+          />
+        )}
       </section>
     </div>,
     document.body,
@@ -1178,7 +1225,7 @@ function ProductBottomSheet({
           : `${title} приготовлен из отборных ингредиентов и подаётся специально для сытного перекуса.`
 
   return createPortal(
-    <div className="sheet-overlay fixed inset-0 z-[100] flex items-end justify-center bg-black/40">
+    <div className="sheet-overlay fixed inset-0 z-[150] flex items-end justify-center bg-black/40">
       <button
         aria-label="Закрыть"
         className="absolute inset-0"
