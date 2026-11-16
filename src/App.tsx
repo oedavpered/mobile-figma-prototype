@@ -1559,6 +1559,26 @@ export default function App() {
           </div>
         )}
 
+        {screen === "menu" && (
+          <div className="pointer-events-none fixed bottom-[86px] left-4 z-50 py-[3px]">
+            <button
+              className="pointer-events-auto flex h-12 items-center gap-2 rounded-full bg-white px-5 text-[16px] leading-5 text-[#292929] shadow-[0_2px_12px_rgba(0,0,0,.14)]"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle cx="10.5" cy="10.5" r="7" stroke="currentColor" strokeWidth="2" />
+                <path d="m16 16 5 5" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
+              </svg>
+              <span>Поиск</span>
+            </button>
+          </div>
+        )}
+
         <nav className="fixed inset-x-4 bottom-[max(8px,env(safe-area-inset-bottom))] z-50 flex h-16 items-center justify-between rounded-[32px] bg-white px-3 shadow-[0_0_12px_rgba(0,0,0,.12)]">
           <NavItem
             active={screen === "menu"}
