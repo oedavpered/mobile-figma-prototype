@@ -1128,15 +1128,6 @@ function SearchBottomSheet({
     setSelectedProduct(null)
   }
 
-  useEffect(() => {
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = "hidden"
-    window.setTimeout(() => inputRef.current?.focus(), 120)
-    return () => {
-      document.body.style.overflow = previousOverflow
-    }
-  }, [])
-
   return createPortal(
     <div className="sheet-overlay fixed inset-0 z-[140] flex items-end justify-center bg-black/40">
       <button
@@ -1184,7 +1175,6 @@ function SearchBottomSheet({
             <input
               aria-label="Найти продукт"
               autoComplete="off"
-              autoFocus
               className="min-w-0 flex-1 bg-transparent text-[16px] leading-5 outline-none placeholder:text-[#adadad]"
               enterKeyHint="search"
               inputMode="search"
@@ -1814,7 +1804,10 @@ function MenuScreen({
           <button
             aria-label="Поиск"
             className="flex h-[30px] w-[30px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#f4f4f4] p-[3px]"
-            onClick={onOpenSearch}
+            onClick={(event) => {
+              event.currentTarget.blur()
+              onOpenSearch()
+            }}
             type="button"
           >
             <img alt="" src={`${A}/menu-search.svg`} />
