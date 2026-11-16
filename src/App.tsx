@@ -138,6 +138,7 @@ const preloadSources = Array.from(
       "d6794.png",
       "29db4.png",
       "bd5fb.png",
+      "loyalty-qr.png",
       "6fa8a.png",
       "8b2f9.png",
       "c6eda.svg",
@@ -174,6 +175,7 @@ function NavItem({
 }) {
   return (
     <button
+      aria-label={label}
       className={`flex min-w-0 items-center justify-center transition-colors ${
         active
           ? "h-12 flex-none flex-row gap-2 rounded-full bg-[#264f36] px-5 font-semibold text-white"
@@ -409,6 +411,79 @@ function HomeScreen({ addOffer }: { addOffer: (id: string) => void }) {
   )
 }
 
+function QrBottomSheet({ onClose }: { onClose: () => void }) {
+  const panelRef = useRef<HTMLElement>(null)
+  const swipeStartY = useRef<number | null>(null)
+  const [dragOffset, setDragOffset] = useState(0)
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [])
+
+  return createPortal(
+    <div className="sheet-overlay fixed inset-0 z-[170] flex items-end justify-center bg-black/40">
+      <button
+        aria-label="Закрыть QR-код"
+        className="absolute inset-0"
+        onClick={onClose}
+        type="button"
+      />
+      <section
+        aria-label="Твой QR-код"
+        aria-modal="true"
+        className="sheet-panel relative flex h-[480px] w-full flex-col items-center rounded-t-[24px] bg-white px-4 pt-2"
+        onTouchEnd={() => {
+          if (swipeStartY.current === null) return
+          swipeStartY.current = null
+          if (dragOffset > 100) onClose()
+          else setDragOffset(0)
+        }}
+        onTouchMove={(event) => {
+          if (swipeStartY.current === null) return
+          setDragOffset(
+            Math.max(0, event.touches[0].clientY - swipeStartY.current),
+          )
+        }}
+        onTouchStart={(event) => {
+          const panelTop = panelRef.current?.getBoundingClientRect().top ?? 0
+          const touchY = event.touches[0].clientY
+          if (touchY - panelTop <= 40) swipeStartY.current = touchY
+        }}
+        ref={panelRef}
+        role="dialog"
+        style={
+          dragOffset > 0
+            ? { transform: `translateY(${dragOffset}px)`, transition: "none" }
+            : undefined
+        }
+      >
+        <div className="flex w-full flex-col items-center gap-4">
+          <span className="h-[5px] w-[50px] rounded-full bg-[#292929]/10" />
+          <div className="flex w-full flex-col items-center gap-2 text-center">
+            <h2 className="text-[24px] font-semibold leading-7">Твой QR-код</h2>
+            <p className="max-w-[359px] text-[16px] leading-5 text-[#606060]">
+              Отсканируйте QR-код на киоске самообслуживания перед
+              оплатой, чтобы получить бонусы за заказ.
+            </p>
+          </div>
+          <div className="flex h-[285px] w-[285px] items-center justify-center rounded-[40px] bg-[#f9f9f9] p-7">
+            <img
+              alt="QR-код для начисления бонусов"
+              className="h-[229px] w-[229px] object-contain mix-blend-multiply"
+              src={`${A}/loyalty-qr.png`}
+            />
+          </div>
+        </div>
+      </section>
+    </div>,
+    document.body,
+  )
+}
+
 function OfferBottomSheet({
   title,
   price,
@@ -427,6 +502,7 @@ function OfferBottomSheet({
   const panelRef = useRef<HTMLElement>(null)
   const swipeStartY = useRef<number | null>(null)
   const [dragOffset, setDragOffset] = useState(0)
+  const [mobileOrder, setMobileOrder] = useState(false)
 
   return createPortal(
     <div className="sheet-overlay fixed inset-0 z-[110] flex items-end justify-center bg-black/40">
@@ -546,16 +622,35 @@ function OfferBottomSheet({
         </div>
 
         <div className="absolute inset-x-0 bottom-0 bg-white px-4 pb-4 pt-3">
-          <button
-            className="h-13 w-full rounded-full bg-[#ee7203] px-4 text-[16px] leading-5 text-white"
-            onClick={() => {
-              onAdd()
-              onClose()
-            }}
-            type="button"
-          >
-            Добавить
-          </button>
+          {mobileOrder ? (
+            <button
+              className="h-13 w-full rounded-full bg-[#ee7203] px-4 text-[16px] leading-5 text-white"
+              onClick={() => {
+                onAdd()
+                onClose()
+              }}
+              type="button"
+            >
+              Добавить
+            </button>
+          ) : (
+            <div className="flex gap-2">
+              <button
+                className="flex h-12 shrink-0 items-center justify-center gap-0.5 rounded-full bg-[#ee7203] px-4 text-[16px] leading-5 text-white"
+                type="button"
+              >
+                <img alt="" src={`${A}/offer-use-qr.svg`} />
+                <span>Воспользоваться</span>
+              </button>
+              <button
+                className="h-12 min-w-0 flex-1 rounded-full bg-[#e9e9e9] px-4 text-[16px] leading-5 text-[#292929]"
+                onClick={() => setMobileOrder(true)}
+                type="button"
+              >
+                Мобильный заказ
+              </button>
+            </div>
+          )}
         </div>
       </section>
     </div>,
@@ -643,13 +738,20 @@ function OfferCard({
   )
 }
 
-function OffersScreen({ addOffer }: { addOffer: (id: string) => void }) {
+function OffersScreen({
+  addOffer,
+  onOpenQr,
+}: {
+  addOffer: (id: string) => void
+  onOpenQr: () => void
+}) {
   return (
     <section className="h-dvh flex-none overflow-y-auto px-4 pb-[92px] pt-4">
       <header className="sticky top-0 z-40 flex h-14 gap-2 bg-white before:absolute before:-left-4 before:-right-4 before:-top-4 before:h-4 before:bg-white before:content-['']">
         <button
           aria-label="Открыть QR-код"
           className="flex w-14 shrink-0 items-center justify-center rounded-2xl bg-[#f9f9f9]"
+          onClick={onOpenQr}
           type="button"
         >
           <img alt="" className="h-12 w-12" src={icons.qr} />
@@ -1551,9 +1653,11 @@ function CartBottomSheet({
 function MenuScreen({
   cart,
   changeQuantity,
+  onOpenQr,
 }: {
   cart: Record<string, number>
   changeQuantity: (id: string, delta: number) => void
+  onOpenQr: () => void
 }) {
   const scrollRef = useRef<HTMLElement>(null)
   const heroRef = useRef<HTMLDivElement>(null)
@@ -1645,17 +1749,32 @@ function MenuScreen({
             : "bg-transparent"
         }`}
       >
-        <button
-          className="flex min-w-0 flex-1 items-center gap-3 rounded-2xl bg-[#f9f9f9] px-3 text-left"
-          type="button"
-        >
-          <img alt="QR-код" className="h-8 w-8 shrink-0" src={icons.qr} />
-          <span className="min-w-0 flex-1 text-[13px] leading-[15px]">
-            <strong className="block font-semibold">В предприятии</strong>
-            <span className="block truncate">ул. Новодмитровская, 77с2</span>
-          </span>
-          <img alt="" className="h-5 w-[10px] shrink-0" src={icons.chevron} />
-        </button>
+        <div className="flex min-w-0 flex-1 items-center rounded-2xl bg-[#f9f9f9] px-3">
+          <button
+            aria-label="Открыть QR-код"
+            className="flex h-10 w-10 shrink-0 items-center justify-start"
+            onClick={onOpenQr}
+            type="button"
+          >
+            <img alt="" className="h-8 w-8" src={icons.qr} />
+          </button>
+          <button
+            className="flex min-w-0 flex-1 items-center gap-3 text-left"
+            type="button"
+          >
+            <span className="min-w-0 flex-1 text-[13px] leading-[15px]">
+              <strong className="block font-semibold">В предприятии</strong>
+              <span className="block truncate">
+                ул. Новодмитровская, 77с2
+              </span>
+            </span>
+            <img
+              alt=""
+              className="h-5 w-[10px] shrink-0"
+              src={icons.chevron}
+            />
+          </button>
+        </div>
         {filtersPinned && (
           <>
             <span
@@ -1771,6 +1890,7 @@ export default function App() {
   const [cart, setCart] = useState<Record<string, number>>({})
   const [cartOpen, setCartOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [qrOpen, setQrOpen] = useState(false)
   const [loadProgress, setLoadProgress] = useState(0)
   const [isReady, setIsReady] = useState(false)
   const cartCount = Object.values(cart).reduce(
@@ -1837,14 +1957,20 @@ export default function App() {
           <HomeScreen addOffer={(id) => changeQuantity(id, 1)} />
         )}
         {screen === "offers" && (
-          <OffersScreen addOffer={(id) => changeQuantity(id, 1)} />
+          <OffersScreen
+            addOffer={(id) => changeQuantity(id, 1)}
+            onOpenQr={() => setQrOpen(true)}
+          />
         )}
         {screen === "menu" && (
           <MenuScreen
             cart={cart}
             changeQuantity={changeQuantity}
+            onOpenQr={() => setQrOpen(true)}
           />
         )}
+
+        {qrOpen && <QrBottomSheet onClose={() => setQrOpen(false)} />}
 
         {cartCount > 0 && (
           <div className="pointer-events-none fixed inset-x-0 bottom-[86px] z-50 flex w-full justify-end px-4 py-[3px]">
