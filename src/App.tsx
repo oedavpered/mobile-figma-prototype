@@ -154,6 +154,7 @@ const preloadSources = Array.from(
       "efe4d.svg",
       "aa8b6.svg",
       "59108.svg",
+      "menu-search.svg",
     ].map((file) => `${A}/${file}`),
   ]),
 )
@@ -1654,10 +1655,12 @@ function MenuScreen({
   cart,
   changeQuantity,
   onOpenQr,
+  onOpenSearch,
 }: {
   cart: Record<string, number>
   changeQuantity: (id: string, delta: number) => void
   onOpenQr: () => void
+  onOpenSearch: () => void
 }) {
   const scrollRef = useRef<HTMLElement>(null)
   const heroRef = useRef<HTMLDivElement>(null)
@@ -1808,6 +1811,14 @@ function MenuScreen({
         }`}
       >
         <div className="flex gap-[6px] overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <button
+            aria-label="Поиск"
+            className="flex h-[30px] w-[30px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#f4f4f4] p-[3px]"
+            onClick={onOpenSearch}
+            type="button"
+          >
+            <img alt="" src={`${A}/menu-search.svg`} />
+          </button>
           {catalogSections.map(({ id, title }) => (
             <button
               className={`h-8 shrink-0 rounded-full px-3 text-[12px] font-medium leading-4 ${
@@ -1961,6 +1972,7 @@ export default function App() {
             cart={cart}
             changeQuantity={changeQuantity}
             onOpenQr={() => setQrOpen(true)}
+            onOpenSearch={() => setSearchOpen(true)}
           />
         )}
 
@@ -1977,27 +1989,6 @@ export default function App() {
               <span className="font-['Tasty_Gothic'] text-[18px]">
                 {cartTotal} ₽
               </span>
-            </button>
-          </div>
-        )}
-
-        {screen === "menu" && (
-          <div className="pointer-events-none fixed bottom-[86px] left-4 z-50 py-[3px]">
-            <button
-              className="pointer-events-auto flex h-12 items-center gap-2 rounded-full bg-white px-5 text-[16px] leading-5 text-[#292929] shadow-[0_2px_12px_rgba(0,0,0,.14)]"
-              onClick={() => setSearchOpen(true)}
-              type="button"
-            >
-              <svg
-                aria-hidden="true"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle cx="10.5" cy="10.5" r="7" stroke="currentColor" strokeWidth="2" />
-                <path d="m16 16 5 5" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
-              </svg>
-              <span>Поиск</span>
             </button>
           </div>
         )}
