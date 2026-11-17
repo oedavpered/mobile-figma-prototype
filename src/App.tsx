@@ -27,10 +27,13 @@ const icons = {
   homeOff: `${A}/93cec.svg`,
   menuOn: `${A}/cf2ce.svg`,
   bigfestMenuBanner: `${A}/bigfest-menu-banner.png`,
+  bigfestCarouselBackground: `${A}/bigfest-carousel-bg.png`,
+  bigfestCarouselLogoDots: `${A}/bigfest-carousel-logo-bg.svg`,
+  bigfestCarouselLogo: `${A}/bigfest-carousel-logo.svg`,
 }
 
 const banners = [
-  icons.bigfestMenuBanner,
+  icons.bigfestCarouselBackground,
   `${A}/be510.png`,
   `${A}/54062.png`,
   `${A}/b6e66.png`,
@@ -1855,13 +1858,50 @@ function MenuScreen({
             role={index === 0 ? "button" : undefined}
             tabIndex={index === 0 ? 0 : undefined}
           >
-            <img
-              alt={index === 0 ? "Участвуй в Бигфесте — выигрывай призы" : ""}
-              className={`absolute inset-0 h-full w-full ${
-                index === 0 ? "object-contain" : "object-cover"
-              }`}
-              src={banner}
-            />
+            {index === 0 ? (
+              <div className="absolute inset-0 flex justify-center bg-[#bee5fa]">
+                <img
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover"
+                  src={banner}
+                />
+                <div className="relative h-full w-full max-w-[390px]">
+                  <div className="absolute left-4 right-4 top-[130px] h-[99px]">
+                    <img
+                      alt=""
+                      className="absolute inset-0 h-full w-full"
+                      src={icons.bigfestCarouselLogoDots}
+                    />
+                    <img
+                      alt="БИГФЕСТ"
+                      className="absolute left-[9.45%] top-[20.53%] h-[65.18%] w-[82.26%]"
+                      src={icons.bigfestCarouselLogo}
+                    />
+                  </div>
+                  <p className="absolute left-6 top-[259px] whitespace-nowrap text-[24px] font-semibold leading-7 text-[#292929]">
+                    Теперь еще больше выгоды!
+                  </p>
+                  <span className="absolute left-4 top-[294px] rounded-full bg-white px-3 py-2 text-[14px] leading-4 text-[#292929]">
+                    За выгодой
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="absolute left-1/2 top-[332px] flex -translate-x-1/2 gap-0.5"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-white/55" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-white/55" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-white/55" />
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <img
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover"
+                src={banner}
+              />
+            )}
             {index !== 0 && (
               <>
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/55" />
