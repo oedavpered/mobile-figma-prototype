@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 
 const A = `${import.meta.env.BASE_URL}assets`
 
@@ -136,6 +137,10 @@ const preloadSources = Array.from(
       "d6794.png",
       "29db4.png",
       "bd5fb.png",
+      "loyalty-qr.png",
+      "030fe.svg",
+      "aba64.svg",
+      "menu-search.svg",
       "6fa8a.png",
       "8b2f9.png",
       "c6eda.svg",
@@ -213,7 +218,13 @@ function AddressHeader() {
   )
 }
 
-function HomeScreen({ addOffer }: { addOffer: (id: string) => void }) {
+function HomeScreen({
+  addOffer,
+  onOpenQr,
+}: {
+  addOffer: (id: string) => void
+  onOpenQr: () => void
+}) {
   const carouselRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -243,6 +254,7 @@ function HomeScreen({ addOffer }: { addOffer: (id: string) => void }) {
         <button
           aria-label="Открыть QR-код"
           className="flex w-14 shrink-0 items-center justify-center rounded-2xl bg-[#f9f9f9]"
+          onClick={onOpenQr}
           type="button"
         >
           <img alt="" className="h-12 w-12" src={icons.qr} />
@@ -396,6 +408,79 @@ function HomeScreen({ addOffer }: { addOffer: (id: string) => void }) {
         />
       </div>
     </section>
+  )
+}
+
+function QrBottomSheet({ onClose }: { onClose: () => void }) {
+  const panelRef = useRef<HTMLElement>(null)
+  const swipeStartY = useRef<number | null>(null)
+  const [dragOffset, setDragOffset] = useState(0)
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [])
+
+  return createPortal(
+    <div className="sheet-overlay fixed inset-0 z-[170] flex items-end justify-center bg-black/40">
+      <button
+        aria-label="Закрыть QR-код"
+        className="absolute inset-0"
+        onClick={onClose}
+        type="button"
+      />
+      <section
+        aria-label="Твой QR-код"
+        aria-modal="true"
+        className="sheet-panel relative flex h-[480px] w-full max-w-[720px] flex-col items-center rounded-t-[24px] bg-white px-4 pt-2"
+        onTouchEnd={() => {
+          if (swipeStartY.current === null) return
+          swipeStartY.current = null
+          if (dragOffset > 100) onClose()
+          else setDragOffset(0)
+        }}
+        onTouchMove={(event) => {
+          if (swipeStartY.current === null) return
+          setDragOffset(
+            Math.max(0, event.touches[0].clientY - swipeStartY.current),
+          )
+        }}
+        onTouchStart={(event) => {
+          const panelTop = panelRef.current?.getBoundingClientRect().top ?? 0
+          const touchY = event.touches[0].clientY
+          if (touchY - panelTop <= 40) swipeStartY.current = touchY
+        }}
+        ref={panelRef}
+        role="dialog"
+        style={
+          dragOffset > 0
+            ? { transform: `translateY(${dragOffset}px)`, transition: "none" }
+            : undefined
+        }
+      >
+        <div className="flex w-full flex-col items-center gap-4">
+          <span className="h-[5px] w-[50px] rounded-full bg-[#292929]/10" />
+          <div className="flex w-full flex-col items-center gap-2 text-center">
+            <h2 className="text-[24px] font-semibold leading-7">Твой QR-код</h2>
+            <p className="max-w-[359px] text-[16px] leading-5 text-[#606060]">
+              Отсканируйте QR-код на киоске самообслуживания перед оплатой,
+              чтобы получить бонусы за заказ.
+            </p>
+          </div>
+          <div className="flex h-[285px] w-[285px] items-center justify-center rounded-[40px] bg-[#f9f9f9] p-7">
+            <img
+              alt="QR-код для начисления бонусов"
+              className="h-[229px] w-[229px] object-contain mix-blend-multiply"
+              src={`${A}/loyalty-qr.png`}
+            />
+          </div>
+        </div>
+      </section>
+    </div>,
+    document.body,
   )
 }
 
@@ -632,13 +717,20 @@ function OfferCard({
   )
 }
 
-function OffersScreen({ addOffer }: { addOffer: (id: string) => void }) {
+function OffersScreen({
+  addOffer,
+  onOpenQr,
+}: {
+  addOffer: (id: string) => void
+  onOpenQr: () => void
+}) {
   return (
     <section className="h-dvh flex-none overflow-y-auto px-4 pb-[92px] pt-4">
       <header className="sticky top-0 z-40 flex h-14 gap-2 bg-white before:absolute before:-left-4 before:-right-4 before:-top-4 before:h-4 before:bg-white before:content-['']">
         <button
           aria-label="Открыть QR-код"
           className="flex w-14 shrink-0 items-center justify-center rounded-2xl bg-[#f9f9f9]"
+          onClick={onOpenQr}
           type="button"
         >
           <img alt="" className="h-12 w-12" src={icons.qr} />
@@ -866,6 +958,299 @@ function CatalogCard({
         </div>
       )}
     </article>
+  )
+}
+
+function SearchProductCard({
+  item,
+  count,
+  changeQuantity,
+  openProduct,
+}: {
+  item: CatalogItem
+  count: number
+  changeQuantity: (id: string, delta: number) => void
+  openProduct: (item: CatalogItem) => void
+}) {
+  const [id, title, price, image] = item
+
+  return (
+    <article
+      className="flex h-[252px] min-w-0 cursor-pointer flex-col items-center justify-between rounded-2xl bg-[#f9f9f9] px-[14px] pb-[14px]"
+      onClick={() => openProduct(item)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") openProduct(item)
+      }}
+      role="button"
+      tabIndex={0}
+    >
+      <div className="flex w-full flex-col items-center">
+        <div className="relative h-[138px] w-[138px] overflow-hidden">
+          <img
+            alt=""
+            className="absolute inset-0 h-full w-full object-contain"
+            src={`${A}/${image}`}
+          />
+        </div>
+        <p className="min-h-10 text-center text-[16px] leading-5">{title}</p>
+      </div>
+      {count > 0 ? (
+        <div className="flex w-full items-center justify-between gap-2">
+          <strong className="whitespace-nowrap text-[16px] leading-5">
+            {Number(price.replace(/\D/g, "")) * count} ₽
+          </strong>
+          <div className="flex items-center gap-2">
+            <button
+              aria-label={`Уменьшить количество: ${title}`}
+              className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#e9e9e9]"
+              onClick={(event) => {
+                event.stopPropagation()
+                changeQuantity(id, -1)
+              }}
+              type="button"
+            >
+              <img alt="" src={icons.minus} />
+            </button>
+            <strong className="min-w-3 text-center text-[16px] leading-5">
+              {count}
+            </strong>
+            <button
+              aria-label={`Увеличить количество: ${title}`}
+              className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#e9e9e9]"
+              onClick={(event) => {
+                event.stopPropagation()
+                openProduct(item)
+              }}
+              type="button"
+            >
+              <img alt="" src={icons.plus} />
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex w-full items-center justify-between">
+          <strong className="text-[16px] leading-5">{price}</strong>
+          <button
+            aria-label={`Добавить в корзину: ${title}`}
+            className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#ee7203]"
+            onClick={(event) => {
+              event.stopPropagation()
+              openProduct(item)
+            }}
+            type="button"
+          >
+            <img alt="" src={icons.plusWhite} />
+          </button>
+        </div>
+      )}
+    </article>
+  )
+}
+
+function SearchBottomSheet({
+  cart,
+  changeQuantity,
+  onClose,
+}: {
+  cart: Record<string, number>
+  changeQuantity: (id: string, delta: number) => void
+  onClose: () => void
+}) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const panelRef = useRef<HTMLElement>(null)
+  const swipeStartY = useRef<number | null>(null)
+  const [dragOffset, setDragOffset] = useState(0)
+  const [query, setQuery] = useState("")
+  const [activeCategory, setActiveCategory] = useState<string | null>(null)
+  const [selectedProduct, setSelectedProduct] = useState<CatalogItem | null>(null)
+  const [productQuantity, setProductQuantity] = useState(1)
+  const normalizedQuery = query.trim().toLocaleLowerCase("ru")
+  const hasSearchIntent = !!normalizedQuery || activeCategory !== null
+  const categories = [
+    ["all", "Все"],
+    ...catalogSections.map(({ id, title }) => [id, title] as const),
+  ] as const
+  const searchableItems = catalogSections.flatMap((section) =>
+    section.items.map((item) => ({ item, sectionId: section.id })),
+  )
+  const results = searchableItems.filter(({ item, sectionId }) => {
+    const matchesCategory =
+      !!normalizedQuery || activeCategory === "all" || activeCategory === sectionId
+    const matchesQuery =
+      !normalizedQuery ||
+      item[1].toLocaleLowerCase("ru").includes(normalizedQuery)
+    return matchesCategory && matchesQuery
+  })
+  const suggestions = normalizedQuery
+    ? searchableItems
+        .filter(({ item }) =>
+          item[1].toLocaleLowerCase("ru").includes(normalizedQuery),
+        )
+        .slice(0, 5)
+        .map(({ item }) => item[1])
+    : []
+
+  const openProduct = (item: CatalogItem) => {
+    setSelectedProduct(item)
+    setProductQuantity(Math.max(1, cart[item[0]] ?? 1))
+  }
+
+  const addProduct = () => {
+    if (!selectedProduct) return
+    const id = selectedProduct[0]
+    changeQuantity(id, productQuantity - (cart[id] ?? 0))
+    setSelectedProduct(null)
+  }
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    window.setTimeout(() => inputRef.current?.focus(), 250)
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [])
+
+  return createPortal(
+    <div className="sheet-overlay fixed inset-0 z-[140] flex items-end justify-center bg-black/40">
+      <button
+        aria-label="Закрыть поиск"
+        className="absolute inset-0"
+        onClick={onClose}
+        type="button"
+      />
+      <section
+        aria-label="Поиск по меню"
+        aria-modal="true"
+        className="sheet-panel relative flex h-[calc(100dvh-44px)] w-full max-w-[720px] flex-col overflow-hidden rounded-t-[24px] bg-white"
+        onTouchEnd={() => {
+          if (swipeStartY.current === null) return
+          swipeStartY.current = null
+          if (dragOffset > 100) onClose()
+          else setDragOffset(0)
+        }}
+        onTouchMove={(event) => {
+          if (swipeStartY.current === null) return
+          setDragOffset(
+            Math.max(0, event.touches[0].clientY - swipeStartY.current),
+          )
+        }}
+        onTouchStart={(event) => {
+          const panelTop = panelRef.current?.getBoundingClientRect().top ?? 0
+          const touchY = event.touches[0].clientY
+          if (touchY - panelTop <= 34) swipeStartY.current = touchY
+        }}
+        ref={panelRef}
+        role="dialog"
+        style={
+          dragOffset > 0
+            ? { transform: `translateY(${dragOffset}px)`, transition: "none" }
+            : undefined
+        }
+      >
+        <div className="flex shrink-0 justify-center pb-3 pt-2">
+          <span className="h-[5px] w-[50px] rounded-full bg-[#292929]/10" />
+        </div>
+        <div className="flex min-h-0 flex-1 flex-col px-4">
+          <label className="flex h-14 shrink-0 items-center gap-2 rounded-2xl bg-[#f9f9f9] px-4">
+            <img alt="" className="h-5 w-5 shrink-0" src={`${A}/030fe.svg`} />
+            <input
+              aria-label="Найти продукт"
+              autoComplete="off"
+              className="min-w-0 flex-1 bg-transparent text-[16px] leading-5 outline-none placeholder:text-[#adadad]"
+              enterKeyHint="search"
+              inputMode="search"
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Поиск"
+              ref={inputRef}
+              type="search"
+              value={query}
+            />
+            {query && (
+              <button
+                aria-label="Очистить поиск"
+                className="flex h-8 w-8 items-center justify-center"
+                onClick={() => {
+                  setQuery("")
+                  inputRef.current?.focus()
+                }}
+                type="button"
+              >
+                <img alt="" className="h-6 w-6" src={`${A}/aba64.svg`} />
+              </button>
+            )}
+          </label>
+          {!normalizedQuery ? (
+            <div className="mt-3 flex shrink-0 gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {categories.map(([id, title]) => (
+                <button
+                  className={`h-8 shrink-0 rounded-full px-3 text-[14px] leading-4 ${
+                    activeCategory === id
+                      ? "bg-[#ee7203] text-white"
+                      : "bg-[#f4f4f4] text-[#292929]"
+                  }`}
+                  key={id}
+                  onClick={() => setActiveCategory(id)}
+                  type="button"
+                >
+                  {title}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-3 flex shrink-0 flex-wrap gap-2">
+              {suggestions.map((suggestion) => (
+                <button
+                  className="h-8 rounded-full bg-[#f4f4f4] px-3 text-[14px] leading-4"
+                  key={suggestion}
+                  onClick={() => {
+                    setQuery(suggestion)
+                    inputRef.current?.focus()
+                  }}
+                  type="button"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="mt-3 min-h-0 flex-1 overflow-y-auto pb-[max(24px,env(safe-area-inset-bottom))]">
+            {!hasSearchIntent ? null : results.length ? (
+              <div className="grid grid-cols-2 gap-2">
+                {results.map(({ item }) => (
+                  <SearchProductCard
+                    changeQuantity={changeQuantity}
+                    count={cart[item[0]] ?? 0}
+                    item={item}
+                    key={item[0]}
+                    openProduct={openProduct}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex min-h-48 flex-col items-center justify-center px-6 text-center">
+                <h2 className="text-[18px] font-semibold leading-6">
+                  Ничего не нашли
+                </h2>
+                <p className="mt-2 text-[14px] leading-5 text-[#adadad]">
+                  Проверьте название или выберите другую категорию
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+        {selectedProduct && (
+          <ProductBottomSheet
+            item={selectedProduct}
+            onAdd={addProduct}
+            onClose={() => setSelectedProduct(null)}
+            quantity={productQuantity}
+            setQuantity={setProductQuantity}
+          />
+        )}
+      </section>
+    </div>,
+    document.body,
   )
 }
 
@@ -1237,9 +1622,13 @@ function CartBottomSheet({
 function MenuScreen({
   cart,
   changeQuantity,
+  onOpenQr,
+  onOpenSearch,
 }: {
   cart: Record<string, number>
   changeQuantity: (id: string, delta: number) => void
+  onOpenQr: () => void
+  onOpenSearch: () => void
 }) {
   const scrollRef = useRef<HTMLElement>(null)
   const chipRefs = useRef<Record<string, HTMLButtonElement | null>>({})
@@ -1302,6 +1691,7 @@ function MenuScreen({
         <button
           aria-label="Открыть QR-код"
           className="flex w-14 shrink-0 items-center justify-center rounded-2xl bg-[#f9f9f9]"
+          onClick={onOpenQr}
           type="button"
         >
           <img alt="" className="h-12 w-12" src={icons.qr} />
@@ -1319,6 +1709,14 @@ function MenuScreen({
       </header>
       <div className="sticky top-14 z-30 -mx-4 mt-3 bg-white px-4 py-2">
         <div className="flex gap-[6px] overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <button
+            aria-label="Поиск"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#f4f4f4]"
+            onClick={onOpenSearch}
+            type="button"
+          >
+            <img alt="" src={`${A}/menu-search.svg`} />
+          </button>
           {catalogSections.map(({ id, title }) => (
             <button
               className={`h-8 shrink-0 rounded-full px-3 text-[14px] leading-4 ${
@@ -1385,6 +1783,8 @@ export default function App() {
   const [screen, setScreen] = useState<"home" | "offers" | "menu">("home")
   const [cart, setCart] = useState<Record<string, number>>({})
   const [cartOpen, setCartOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [qrOpen, setQrOpen] = useState(false)
   const [loadProgress, setLoadProgress] = useState(0)
   const [isReady, setIsReady] = useState(false)
   const cartCount = Object.values(cart).reduce(
@@ -1448,14 +1848,27 @@ export default function App() {
     <main className="min-h-dvh bg-white text-[#292929]">
       <div className="mx-auto flex min-h-dvh w-full max-w-[720px] flex-col">
         {screen === "home" && (
-          <HomeScreen addOffer={(id) => changeQuantity(id, 1)} />
+          <HomeScreen
+            addOffer={(id) => changeQuantity(id, 1)}
+            onOpenQr={() => setQrOpen(true)}
+          />
         )}
         {screen === "offers" && (
-          <OffersScreen addOffer={(id) => changeQuantity(id, 1)} />
+          <OffersScreen
+            addOffer={(id) => changeQuantity(id, 1)}
+            onOpenQr={() => setQrOpen(true)}
+          />
         )}
         {screen === "menu" && (
-          <MenuScreen cart={cart} changeQuantity={changeQuantity} />
+          <MenuScreen
+            cart={cart}
+            changeQuantity={changeQuantity}
+            onOpenQr={() => setQrOpen(true)}
+            onOpenSearch={() => setSearchOpen(true)}
+          />
         )}
+
+        {qrOpen && <QrBottomSheet onClose={() => setQrOpen(false)} />}
 
         {cartCount > 0 && (
           <div className="pointer-events-none fixed inset-x-0 bottom-[86px] z-50 mx-auto flex w-full max-w-[720px] justify-end px-4 py-[3px]">
@@ -1500,6 +1913,13 @@ export default function App() {
             changeQuantity={changeQuantity}
             onClose={() => setCartOpen(false)}
             total={cartTotal}
+          />
+        )}
+        {searchOpen && (
+          <SearchBottomSheet
+            cart={cart}
+            changeQuantity={changeQuantity}
+            onClose={() => setSearchOpen(false)}
           />
         )}
       </div>
