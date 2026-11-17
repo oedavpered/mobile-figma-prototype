@@ -29,7 +29,12 @@ const icons = {
   bigfestMenuBanner: `${A}/bigfest-menu-banner.png`,
 }
 
-const banners = [`${A}/be510.png`, `${A}/54062.png`, `${A}/b6e66.png`]
+const banners = [
+  icons.bigfestMenuBanner,
+  `${A}/be510.png`,
+  `${A}/54062.png`,
+  `${A}/b6e66.png`,
+]
 const products = {
   roll: `${A}/c7596.png`,
   salad: `${A}/9e119.png`,
@@ -287,7 +292,7 @@ function HomeScreen({ addOffer }: { addOffer: (id: string) => void }) {
               src={banner}
             />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent from-[55%] via-black/30 via-[72%] to-black/60" />
-            {index === 0 && (
+            {index === 1 && (
               <div className="absolute bottom-4 left-4 right-4 text-white">
                 <p className="text-[16px] leading-5">
                   Попробуй новкинки этой зимы
@@ -780,7 +785,56 @@ function OffersScreen({
         </button>
       </div>
 
-      <h1 className="mb-2 mt-2 text-[24px] font-semibold leading-7">Акции</h1>
+      <section className="relative mt-3 h-[244px] overflow-hidden rounded-2xl bg-[#bee5fa]">
+        <div className="absolute left-4 top-4 h-[49px] w-[178px]">
+          <img
+            alt=""
+            className="absolute inset-0 h-full w-full"
+            src={icons.bigfestLogo}
+          />
+          <img
+            alt="БИГФЕСТ"
+            className="absolute inset-x-[9%] bottom-[14%] top-[20%] h-auto w-[83%]"
+            src={icons.bigfestWordmark}
+          />
+        </div>
+        <button
+          className="absolute right-4 top-[26px] rounded-2xl bg-white/40 px-3 py-2 text-[12px] leading-[14px]"
+          type="button"
+        >
+          Как участвовать?
+        </button>
+        <div className="absolute bottom-4 left-4 right-4 grid grid-cols-2 gap-2">
+          <button className="relative h-[152px] text-left" type="button">
+            <img alt="" className="absolute left-0 top-0 h-[95px] w-full" src={icons.dayCard} />
+            <span className="absolute left-4 top-2 z-10 text-[10px] leading-[14px] text-[#ee7203]">
+              Акция дня
+            </span>
+            <img alt="" className="absolute left-[22px] top-0 z-10 h-[94px] w-[94px] object-contain" src={icons.chicken} />
+            <span className="absolute right-[18px] top-[25px] z-20 text-[16px] font-semibold">
+              135<small className="text-[10px]">₽</small>
+            </span>
+            <img alt="" className="absolute bottom-0 left-0 h-[57px] w-full" src={icons.dayFooter} />
+            <span className="absolute bottom-3 left-4 z-10 w-[105px] text-[12px] leading-[14px]">
+              Успей получить до 23:59
+            </span>
+            <img alt="" className="absolute bottom-4 right-4 z-10 h-6 w-3" src={icons.arrow} />
+          </button>
+          <button className="relative h-[152px] text-left" type="button">
+            <img alt="" className="absolute left-0 top-0 h-[95px] w-full" src={icons.secretCard} />
+            <span className="absolute left-4 top-[20px] z-10 text-[24px] font-semibold leading-7">
+              Сюрприз<br />дня
+            </span>
+            <img alt="" className="absolute bottom-0 left-0 h-[57px] w-full" src={icons.secretFooter} />
+            <span className="absolute bottom-3 left-4 z-10 w-[105px] text-[12px] leading-[14px]">
+              Успей получить до 23:59
+            </span>
+            <img alt="" className="absolute bottom-4 right-4 z-10 h-6 w-3" src={icons.arrow} />
+          </button>
+        </div>
+      </section>
+
+      <h1 className="mb-2 mt-4 text-[24px] font-semibold leading-7">Акции</h1>
       <div className="flex flex-col gap-2">
         <OfferCard
           id="offer-nuggets"
@@ -1644,11 +1698,13 @@ function CartBottomSheet({
 function MenuScreen({
   cart,
   changeQuantity,
+  onOpenOffers,
   onOpenQr,
   onOpenSearch,
 }: {
   cart: Record<string, number>
   changeQuantity: (id: string, delta: number) => void
+  onOpenOffers: () => void
   onOpenQr: () => void
   onOpenSearch: () => void
 }) {
@@ -1779,14 +1835,46 @@ function MenuScreen({
         className="-mt-[calc(3.5rem+env(safe-area-inset-top))] flex h-[calc(422px+env(safe-area-inset-top))] snap-x overflow-x-auto bg-[#bee5fa] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         ref={heroRef}
       >
-        {banners.map((banner) => (
-          <article className="relative h-full w-full shrink-0 snap-start overflow-hidden" key={banner}>
-            <img alt="" className="absolute inset-0 h-full w-full object-cover" src={banner} />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/55" />
-            <div className="absolute bottom-24 left-4 right-24 text-white">
-              <p className="text-[16px] leading-5">Попробуй новинки этой зимы</p>
-              <h2 className="mt-1 text-[24px] font-semibold leading-7">Закажи у нас в точке или доставку!</h2>
-            </div>
+        {banners.map((banner, index) => (
+          <article
+            aria-label={index === 0 ? "Открыть акции Бигфеста" : undefined}
+            className={`relative h-full w-full shrink-0 snap-start overflow-hidden ${
+              index === 0 ? "cursor-pointer bg-[#bee5fa]" : ""
+            }`}
+            key={banner}
+            onClick={index === 0 ? onOpenOffers : undefined}
+            onKeyDown={
+              index === 0
+                ? (event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      onOpenOffers()
+                    }
+                  }
+                : undefined
+            }
+            role={index === 0 ? "button" : undefined}
+            tabIndex={index === 0 ? 0 : undefined}
+          >
+            <img
+              alt={index === 0 ? "Участвуй в Бигфесте — выигрывай призы" : ""}
+              className={`absolute inset-0 h-full w-full ${
+                index === 0 ? "object-contain" : "object-cover"
+              }`}
+              src={banner}
+            />
+            {index !== 0 && (
+              <>
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/55" />
+                <div className="absolute bottom-24 left-4 right-24 text-white">
+                  <p className="text-[16px] leading-5">
+                    Попробуй новинки этой зимы
+                  </p>
+                  <h2 className="mt-1 text-[24px] font-semibold leading-7">
+                    Закажи у нас в точке или доставку!
+                  </h2>
+                </div>
+              </>
+            )}
           </article>
         ))}
       </div>
@@ -1847,11 +1935,18 @@ function MenuScreen({
         </div>
       </div>
       {!filtersPinned && (
-        <img
-          alt="Участвуй в Бигфесте — выигрывай призы"
-          className="mx-4 mt-1 block h-auto w-[calc(100%-2rem)] rounded-2xl"
-          src={icons.bigfestMenuBanner}
-        />
+        <button
+          aria-label="Открыть акции Бигфеста"
+          className="mx-4 mt-1 block w-[calc(100%-2rem)] overflow-hidden rounded-2xl"
+          onClick={onOpenOffers}
+          type="button"
+        >
+          <img
+            alt="Участвуй в Бигфесте — выигрывай призы"
+            className="block h-auto w-full"
+            src={icons.bigfestMenuBanner}
+          />
+        </button>
       )}
       {catalogSections.map(({ id, title, items }) => (
         <section className="scroll-mt-12 px-4 pt-3" id={id} key={id}>
@@ -1964,6 +2059,7 @@ export default function App() {
           <MenuScreen
             cart={cart}
             changeQuantity={changeQuantity}
+            onOpenOffers={() => setScreen("offers")}
             onOpenQr={() => setQrOpen(true)}
             onOpenSearch={() => setSearchOpen(true)}
           />
