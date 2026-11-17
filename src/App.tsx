@@ -259,7 +259,7 @@ function HomeScreen({ addOffer }: { addOffer: (id: string) => void }) {
   }, [])
 
   return (
-    <section className="h-dvh flex-none overflow-y-auto px-4 pb-[92px] pt-4">
+    <section className="min-h-dvh px-4 pb-[92px] pt-4">
       <header className="sticky top-0 z-40 flex h-14 gap-2 bg-white before:absolute before:-left-4 before:-right-4 before:-top-4 before:h-4 before:bg-white before:content-['']">
         <button
           aria-label="Открыть QR-код"
@@ -755,7 +755,7 @@ function OffersScreen({
   onOpenQr: () => void
 }) {
   return (
-    <section className="h-dvh flex-none overflow-y-auto px-4 pb-[92px] pt-4">
+    <section className="min-h-dvh px-4 pb-[92px] pt-4">
       <header className="sticky top-0 z-40 flex h-14 gap-2 bg-white before:absolute before:-left-4 before:-right-4 before:-top-4 before:h-4 before:bg-white before:content-['']">
         <button
           aria-label="Открыть QR-код"
@@ -1711,7 +1711,6 @@ function MenuScreen({
   onOpenQr: () => void
   onOpenSearch: () => void
 }) {
-  const scrollRef = useRef<HTMLElement>(null)
   const heroRef = useRef<HTMLDivElement>(null)
   const chipRefs = useRef<Record<string, HTMLButtonElement | null>>({})
   const [activeSection, setActiveSection] = useState("combo")
@@ -1747,9 +1746,6 @@ function MenuScreen({
   }
 
   useEffect(() => {
-    const root = scrollRef.current
-    if (!root) return
-
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
@@ -1757,7 +1753,7 @@ function MenuScreen({
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
         if (visible[0]) setActiveSection(visible[0].target.id)
       },
-      { root, rootMargin: "-105px 0px -72% 0px", threshold: 0 },
+      { root: null, rootMargin: "-105px 0px -72% 0px", threshold: 0 },
     )
 
     catalogSections.forEach(({ id }) => {
@@ -1765,6 +1761,13 @@ function MenuScreen({
       if (section) observer.observe(section)
     })
     return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const updatePinnedState = () => setFiltersPinned(window.scrollY >= 280)
+    updatePinnedState()
+    window.addEventListener("scroll", updatePinnedState, { passive: true })
+    return () => window.removeEventListener("scroll", updatePinnedState)
   }, [])
 
   useEffect(() => {
@@ -1779,13 +1782,7 @@ function MenuScreen({
   }, [activeSection])
 
   return (
-    <section
-      className="h-dvh flex-none overflow-y-auto pb-[92px] pt-[env(safe-area-inset-top)]"
-      onScroll={(event) => {
-        setFiltersPinned(event.currentTarget.scrollTop >= 280)
-      }}
-      ref={scrollRef}
-    >
+    <section className="min-h-dvh pb-[92px] pt-[env(safe-area-inset-top)]">
       {filtersPinned &&
         createPortal(
           <div
@@ -2045,6 +2042,10 @@ export default function App() {
   useEffect(() => {
     if (cartCount === 0) setCartOpen(false)
   }, [cartCount])
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" })
+  }, [screen])
 
   useEffect(() => {
     let active = true
