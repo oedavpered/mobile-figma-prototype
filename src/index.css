@@ -1,5 +1,45 @@
 @import 'tailwindcss';
 
+@font-face {
+  font-family: 'Tasty Gothic';
+  src: url('./fonts/Tasty-Gothic-Book.otf') format('opentype');
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Tasty Gothic';
+  src: url('./fonts/Tasty-Gothic-Demi.otf') format('opentype');
+  font-display: swap;
+  font-style: normal;
+  font-weight: 500 600;
+}
+
+@font-face {
+  font-family: 'Tasty Gothic';
+  src: url('./fonts/Tasty-Gothic-Heavy.otf') format('opentype');
+  font-display: swap;
+  font-style: normal;
+  font-weight: 700 900;
+}
+
+@font-face {
+  font-family: 'Tasty Gothic Compressed';
+  src: url('./fonts/Tasty-Gothic-Compressed-Book.otf') format('opentype');
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Tasty Gothic Compressed';
+  src: url('./fonts/Tasty-Gothic-Compressed-Demi.otf') format('opentype');
+  font-display: swap;
+  font-style: normal;
+  font-weight: 500 600;
+}
+
 @layer base {
   html {
     background: white;
@@ -7,7 +47,7 @@
 
   body {
     min-width: 320px;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Tasty Gothic', Arial, Helvetica, sans-serif;
   }
 
   button {
