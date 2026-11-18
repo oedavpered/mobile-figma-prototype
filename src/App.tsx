@@ -483,7 +483,7 @@ function QrBottomSheet({ onClose }: { onClose: () => void }) {
         onTouchStart={(event) => {
           const panelTop = panelRef.current?.getBoundingClientRect().top ?? 0
           const touchY = event.touches[0].clientY
-          if (touchY - panelTop <= 64) swipeStartY.current = touchY
+          if (touchY - panelTop <= 128) swipeStartY.current = touchY
         }}
         ref={panelRef}
         role="dialog"
@@ -562,7 +562,7 @@ function OfferBottomSheet({
         onTouchStart={(event) => {
           const panelTop = panelRef.current?.getBoundingClientRect().top ?? 0
           const touchY = event.touches[0].clientY
-          if (touchY - panelTop <= 180) swipeStartY.current = touchY
+          if (touchY - panelTop <= 220) swipeStartY.current = touchY
         }}
         ref={panelRef}
         role="dialog"
@@ -1164,7 +1164,7 @@ function SearchBottomSheet({
         onTouchStart={(event) => {
           const panelTop = panelRef.current?.getBoundingClientRect().top ?? 0
           const touchY = event.touches[0].clientY
-          if (touchY - panelTop <= 64) swipeStartY.current = touchY
+          if (touchY - panelTop <= 128) swipeStartY.current = touchY
         }}
         ref={panelRef}
         role="dialog"
@@ -1353,7 +1353,7 @@ function ProductBottomSheet({
         onTouchStart={(event) => {
           const panelTop = panelRef.current?.getBoundingClientRect().top ?? 0
           const touchY = event.touches[0].clientY
-          if (touchY - panelTop <= 180) swipeStartY.current = touchY
+          if (touchY - panelTop <= 220) swipeStartY.current = touchY
         }}
         ref={panelRef}
         role="dialog"
@@ -1513,7 +1513,7 @@ function CartBottomSheet({
         onTouchStart={(event) => {
           const panelTop = panelRef.current?.getBoundingClientRect().top ?? 0
           const touchY = event.touches[0].clientY
-          if (touchY - panelTop <= 160) swipeStartY.current = touchY
+          if (touchY - panelTop <= 220) swipeStartY.current = touchY
         }}
         ref={panelRef}
         role="dialog"
