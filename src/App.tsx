@@ -3,6 +3,25 @@ import { createPortal } from "react-dom"
 
 const A = `${import.meta.env.BASE_URL}assets`
 
+function canStartSheetSwipe(
+  target: EventTarget | null,
+  panel: HTMLElement | null,
+) {
+  let node = target instanceof HTMLElement ? target : null
+
+  while (node && node !== panel) {
+    const { overflowY } = window.getComputedStyle(node)
+    const isScrollable =
+      (overflowY === "auto" || overflowY === "scroll") &&
+      node.scrollHeight > node.clientHeight + 1
+
+    if (isScrollable) return node.scrollTop <= 0
+    node = node.parentElement
+  }
+
+  return true
+}
+
 const icons = {
   qr: `${A}/314c7.svg`,
   chevron: `${A}/cff17.svg`,
@@ -475,15 +494,18 @@ function QrBottomSheet({ onClose }: { onClose: () => void }) {
         }}
         onTouchMove={(event) => {
           if (swipeStartY.current === null) return
+          const delta = event.touches[0].clientY - swipeStartY.current
+          if (delta <= 0) {
+            swipeStartY.current = null
+            return
+          }
           event.preventDefault()
-          setDragOffset(
-            Math.max(0, event.touches[0].clientY - swipeStartY.current),
-          )
+          setDragOffset(delta)
         }}
         onTouchStart={(event) => {
-          const panelTop = panelRef.current?.getBoundingClientRect().top ?? 0
-          const touchY = event.touches[0].clientY
-          if (touchY - panelTop <= 256) swipeStartY.current = touchY
+          if (canStartSheetSwipe(event.target, panelRef.current)) {
+            swipeStartY.current = event.touches[0].clientY
+          }
         }}
         ref={panelRef}
         role="dialog"
@@ -554,15 +576,18 @@ function OfferBottomSheet({
         }}
         onTouchMove={(event) => {
           if (swipeStartY.current === null) return
+          const delta = event.touches[0].clientY - swipeStartY.current
+          if (delta <= 0) {
+            swipeStartY.current = null
+            return
+          }
           event.preventDefault()
-          setDragOffset(
-            Math.max(0, event.touches[0].clientY - swipeStartY.current),
-          )
+          setDragOffset(delta)
         }}
         onTouchStart={(event) => {
-          const panelTop = panelRef.current?.getBoundingClientRect().top ?? 0
-          const touchY = event.touches[0].clientY
-          if (touchY - panelTop <= 220) swipeStartY.current = touchY
+          if (canStartSheetSwipe(event.target, panelRef.current)) {
+            swipeStartY.current = event.touches[0].clientY
+          }
         }}
         ref={panelRef}
         role="dialog"
@@ -1156,15 +1181,18 @@ function SearchBottomSheet({
         }}
         onTouchMove={(event) => {
           if (swipeStartY.current === null) return
+          const delta = event.touches[0].clientY - swipeStartY.current
+          if (delta <= 0) {
+            swipeStartY.current = null
+            return
+          }
           event.preventDefault()
-          setDragOffset(
-            Math.max(0, event.touches[0].clientY - swipeStartY.current),
-          )
+          setDragOffset(delta)
         }}
         onTouchStart={(event) => {
-          const panelTop = panelRef.current?.getBoundingClientRect().top ?? 0
-          const touchY = event.touches[0].clientY
-          if (touchY - panelTop <= 256) swipeStartY.current = touchY
+          if (canStartSheetSwipe(event.target, panelRef.current)) {
+            swipeStartY.current = event.touches[0].clientY
+          }
         }}
         ref={panelRef}
         role="dialog"
@@ -1345,15 +1373,18 @@ function ProductBottomSheet({
         }}
         onTouchMove={(event) => {
           if (swipeStartY.current === null) return
+          const delta = event.touches[0].clientY - swipeStartY.current
+          if (delta <= 0) {
+            swipeStartY.current = null
+            return
+          }
           event.preventDefault()
-          setDragOffset(
-            Math.max(0, event.touches[0].clientY - swipeStartY.current),
-          )
+          setDragOffset(delta)
         }}
         onTouchStart={(event) => {
-          const panelTop = panelRef.current?.getBoundingClientRect().top ?? 0
-          const touchY = event.touches[0].clientY
-          if (touchY - panelTop <= 220) swipeStartY.current = touchY
+          if (canStartSheetSwipe(event.target, panelRef.current)) {
+            swipeStartY.current = event.touches[0].clientY
+          }
         }}
         ref={panelRef}
         role="dialog"
@@ -1505,15 +1536,18 @@ function CartBottomSheet({
         }}
         onTouchMove={(event) => {
           if (swipeStartY.current === null) return
+          const delta = event.touches[0].clientY - swipeStartY.current
+          if (delta <= 0) {
+            swipeStartY.current = null
+            return
+          }
           event.preventDefault()
-          setDragOffset(
-            Math.max(0, event.touches[0].clientY - swipeStartY.current),
-          )
+          setDragOffset(delta)
         }}
         onTouchStart={(event) => {
-          const panelTop = panelRef.current?.getBoundingClientRect().top ?? 0
-          const touchY = event.touches[0].clientY
-          if (touchY - panelTop <= 220) swipeStartY.current = touchY
+          if (canStartSheetSwipe(event.target, panelRef.current)) {
+            swipeStartY.current = event.touches[0].clientY
+          }
         }}
         ref={panelRef}
         role="dialog"
