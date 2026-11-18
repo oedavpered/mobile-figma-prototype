@@ -395,7 +395,7 @@ function HomeScreen({
               className="absolute left-[22px] top-0 z-10 h-[94px] w-[94px] object-contain"
               src={icons.chicken}
             />
-            <span className="absolute right-[18px] top-[25px] z-20 text-[16px] font-semibold">
+            <span className="absolute right-[18px] top-[25px] z-20 text-[16px] font-medium">
               135<small className="text-[10px]">₽</small>
             </span>
             <img
@@ -625,7 +625,7 @@ function OfferBottomSheet({
                 </p>
               </div>
               <div className="relative h-[200px] w-[120px] shrink-0">
-                <span className="absolute right-4 top-6 z-20 flex h-[51px] w-[51px] items-center justify-center rounded-full bg-[#fb471f] text-[16px] font-semibold text-white">
+                <span className="absolute right-4 top-6 z-20 flex h-[51px] w-[51px] items-center justify-center rounded-full bg-[#fb471f] text-[16px] font-medium text-white">
                   {price}
                   <small className="text-[12px]">₽</small>
                 </span>
@@ -742,7 +742,7 @@ function OfferCard({
             </p>
           </div>
           <div className="relative h-[200px] w-[120px] shrink-0">
-            <span className="absolute right-4 top-6 z-20 flex h-[51px] w-[51px] items-center justify-center rounded-full bg-[#fb471f] text-[16px] font-semibold text-white">
+            <span className="absolute right-4 top-6 z-20 flex h-[51px] w-[51px] items-center justify-center rounded-full bg-[#fb471f] text-[16px] font-medium text-white">
               {price}
               <small className="text-[12px]">₽</small>
             </span>
@@ -923,7 +923,7 @@ function ProductCard({
         </div>
       ) : (
         <div className="flex w-full items-center justify-between">
-          <strong className="text-[16px] leading-5">{price}</strong>
+          <span className="text-[16px] font-semibold leading-5">{price}</span>
           <button
             aria-label="Добавить в корзину"
             className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#ee7203]"
@@ -1002,7 +1002,7 @@ function CatalogCard({
         </div>
       ) : (
         <div className="flex w-full items-center justify-between">
-          <strong className="text-[16px] leading-5">{price}</strong>
+          <span className="text-[16px] font-semibold leading-5">{price}</span>
           <button
             aria-label="Добавить в корзину"
             className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#ee7203]"
@@ -1051,9 +1051,9 @@ function SearchProductCard({
       </div>
       {count > 0 ? (
         <div className="flex w-full items-center justify-between gap-2">
-          <strong className="whitespace-nowrap text-[16px] leading-5">
+          <span className="whitespace-nowrap text-[16px] font-semibold leading-5">
             {Number(price.replace(/\D/g, "")) * count} ₽
-          </strong>
+          </span>
           <div className="flex items-center gap-2">
             <button
               aria-label={`Уменьшить количество: ${title}`}
@@ -1084,7 +1084,7 @@ function SearchProductCard({
         </div>
       ) : (
         <div className="flex w-full items-center justify-between">
-          <strong className="text-[16px] leading-5">{price}</strong>
+          <span className="text-[16px] font-semibold leading-5">{price}</span>
           <button
             aria-label={`Добавить в корзину: ${title}`}
             className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#ee7203]"
@@ -1633,9 +1633,9 @@ function CartBottomSheet({
                         <img alt="" src={`${A}/87e6f.svg`} />
                       </button>
                     </div>
-                    <strong className="whitespace-nowrap text-[16px] leading-5">
+                    <span className="whitespace-nowrap text-[16px] font-semibold leading-5">
                       {unitPrice * quantity} ₽
-                    </strong>
+                    </span>
                   </div>
                 </div>
               </article>
@@ -1932,7 +1932,7 @@ export default function App() {
         {cartCount > 0 && (
           <div className="pointer-events-none fixed inset-x-0 bottom-[86px] z-50 mx-auto flex w-full max-w-[720px] justify-end px-4 py-[3px]">
             <button
-              className="pointer-events-auto flex h-fit w-fit items-center justify-center gap-x-1.5 gap-y-1 rounded-full bg-[#ff5f00] px-5 py-3 font-semibold leading-4 text-white shadow-[0_0_5.8px_#ff5f00]"
+              className="pointer-events-auto flex h-fit w-fit items-center justify-center gap-x-1.5 gap-y-1 rounded-full bg-[#ff5f00] px-5 py-3 font-medium leading-4 text-white shadow-[0_0_5.8px_#ff5f00]"
               onClick={() => setCartOpen(true)}
               type="button"
             >
