@@ -22,6 +22,16 @@ function canStartSheetSwipe(
   return true
 }
 
+function useBodyScrollLock() {
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [])
+}
+
 const icons = {
   qr: `${A}/314c7.svg`,
   chevron: `${A}/cff17.svg`,
@@ -466,13 +476,7 @@ function QrBottomSheet({ onClose }: { onClose: () => void }) {
   const swipeStartY = useRef<number | null>(null)
   const [dragOffset, setDragOffset] = useState(0)
 
-  useEffect(() => {
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = "hidden"
-    return () => {
-      document.body.style.overflow = previousOverflow
-    }
-  }, [])
+  useBodyScrollLock()
 
   return createPortal(
     <div className="sheet-overlay fixed inset-0 z-[170] flex items-end justify-center bg-black/40">
@@ -556,6 +560,7 @@ function OfferBottomSheet({
   const panelRef = useRef<HTMLElement>(null)
   const swipeStartY = useRef<number | null>(null)
   const [dragOffset, setDragOffset] = useState(0)
+  useBodyScrollLock()
 
   return (
     <div className="sheet-overlay fixed inset-0 z-[110] flex items-end justify-center bg-black/40">
@@ -1152,13 +1157,10 @@ function SearchBottomSheet({
     setSelectedProduct(null)
   }
 
+  useBodyScrollLock()
+
   useEffect(() => {
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = "hidden"
     window.setTimeout(() => inputRef.current?.focus(), 250)
-    return () => {
-      document.body.style.overflow = previousOverflow
-    }
   }, [])
 
   return createPortal(
@@ -1327,6 +1329,7 @@ function ProductBottomSheet({
   const panelRef = useRef<HTMLElement>(null)
   const swipeStartY = useRef<number | null>(null)
   const [dragOffset, setDragOffset] = useState(0)
+  useBodyScrollLock()
   const options = [
     ["6fa8a.png", "Картофель Фри Средний"],
     ["8b2f9.png", "Питьевая вода Черноголовка газированная 0,5"],
@@ -1514,6 +1517,7 @@ function CartBottomSheet({
   const panelRef = useRef<HTMLElement>(null)
   const swipeStartY = useRef<number | null>(null)
   const [dragOffset, setDragOffset] = useState(0)
+  useBodyScrollLock()
   const [orderComplete, setOrderComplete] = useState(false)
   const items = purchasableItems.filter(([id]) => (cart[id] ?? 0) > 0)
 

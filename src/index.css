@@ -43,11 +43,13 @@
 @layer base {
   html {
     background: white;
+    overscroll-behavior-y: none;
   }
 
   body {
     min-width: 320px;
     font-family: 'Tasty Gothic', Arial, Helvetica, sans-serif;
+    overscroll-behavior-y: none;
   }
 
   button {
@@ -75,4 +77,8 @@
 .sheet-panel {
   animation: sheet-slide-in 280ms cubic-bezier(0.22, 1, 0.36, 1);
   overscroll-behavior: contain;
+}
+
+.sheet-panel .overflow-y-auto {
+  overscroll-behavior-y: contain;
 }
