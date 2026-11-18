@@ -732,7 +732,7 @@ function OfferCard({
         <div className="flex min-w-0 flex-1 justify-between">
           <div className="flex min-w-0 flex-1 flex-col justify-between py-4 pl-4">
             <div>
-              <h2 className="max-w-[180px] text-[17px] font-bold leading-5">
+              <h2 className="max-w-[180px] text-[17px] font-semibold leading-5">
                 {title}
               </h2>
               <p className="mt-1 text-[13px] leading-4">Ждем тебя!</p>
