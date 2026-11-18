@@ -68,6 +68,7 @@ const catalogSections = [
       ["caesar-roll", "Цезарь ролл", "278 ₽", "67d13.png"],
       ["fish-roll", "Фиш ролл", "421 ₽", "fb9ca.png"],
       ["big-hit", "Биг Хит", "280 ₽", "eaa9e.png"],
+      ["grand", "Гранд", "297 ₽", "burger-grand.png"],
       ["big-chicken", "Биг Чикен Бургер", "362 ₽", "9943e.png"],
       ["cheeseburger", "Чизбургер", "100 ₽", "0d3ec.png"],
       ["hamburger", "Гамбургер", "95 ₽", "d9b78.png"],
@@ -102,6 +103,36 @@ const catalogSections = [
 ] as const
 
 type CatalogItem = typeof catalogSections[number]["items"][number]
+
+function ProductImage({
+  image,
+  className,
+}: {
+  image: string
+  className: string
+}) {
+  if (image !== "burger-grand.png") {
+    return (
+      <img
+        alt=""
+        className={`${className} object-contain`}
+        src={`${A}/${image}`}
+      />
+    )
+  }
+
+  return (
+    <span className={`${className} relative block overflow-hidden`}>
+      <span className="absolute inset-[12.22%_0_2.22%_0] overflow-hidden">
+        <img
+          alt=""
+          className="absolute left-[-12.71%] top-[3.1%] h-[96.9%] w-[125.35%] max-w-none"
+          src={`${A}/${image}`}
+        />
+      </span>
+    </span>
+  )
+}
 
 const offerItems = [
   ["offer-nuggets", "Наггетсы (6 шт.) всего за 95 рублей", "95 ₽", "ce98a.png"],
@@ -902,11 +933,7 @@ function CatalogCard({
     >
       <div className="flex w-full flex-col items-center">
         <div className="relative h-[138px] w-[138px] overflow-hidden">
-          <img
-            alt=""
-            className="absolute inset-0 h-full w-full object-contain"
-            src={`${A}/${image}`}
-          />
+          <ProductImage className="h-full w-full" image={image} />
         </div>
         <p className="min-h-10 text-center text-[16px] leading-5">{title}</p>
         {count > 0 && (
@@ -986,11 +1013,7 @@ function SearchProductCard({
     >
       <div className="flex w-full flex-col items-center">
         <div className="relative h-[138px] w-[138px] overflow-hidden">
-          <img
-            alt=""
-            className="absolute inset-0 h-full w-full object-contain"
-            src={`${A}/${image}`}
-          />
+          <ProductImage className="h-full w-full" image={image} />
         </div>
         <p className="min-h-10 text-center text-[16px] leading-5">{title}</p>
       </div>
@@ -1281,7 +1304,9 @@ function ProductBottomSheet({
   ]
   const description = isCombo
     ? "Комбо состоит из основного продукта, картофеля на выбор и напитка на выбор. Цена Комбо может меняться в зависимости от комплектации."
-    : item[0].includes("cola") ||
+    : item[0] === "grand"
+      ? "Сочная говяжья котлета, плавленый сыр, свежий лук, маринованные огурчики и фирменный соус в румяной булочке с кунжутом."
+      : item[0].includes("cola") ||
         item[0].includes("orange") ||
         item[0].includes("lemon")
       ? `Освежающий ${title.toLowerCase()} с ярким вкусом — отличный выбор к любимому блюду.`
@@ -1343,11 +1368,7 @@ function ProductBottomSheet({
 
         <div className="overflow-y-auto px-4 pb-24">
           <div className="flex justify-center">
-            <img
-              alt=""
-              className="h-[220px] w-[220px] object-contain"
-              src={`${A}/${image}`}
-            />
+            <ProductImage className="h-[220px] w-[220px]" image={image} />
           </div>
 
           <div className="mt-5">
@@ -1390,11 +1411,7 @@ function ProductBottomSheet({
             Включает данные продукты
           </p>
           <div className="mt-[10px] flex min-h-[76px] items-center gap-2 rounded-2xl bg-[#f9f9f9] p-4">
-            <img
-              alt=""
-              className="h-11 w-11 object-contain"
-              src={`${A}/${image}`}
-            />
+            <ProductImage className="h-11 w-11" image={image} />
             <span className="text-[16px] leading-5">
               {isCombo ? title.replace(" Комбо", "") : title}
             </span>
@@ -1520,10 +1537,9 @@ function CartBottomSheet({
                 className="flex min-h-[142px] items-center gap-3 rounded-2xl bg-[#f9f9f9] p-4"
                 key={id}
               >
-                <img
-                  alt=""
-                  className="h-[112px] w-[132px] shrink-0 object-contain"
-                  src={`${A}/${image}`}
+                <ProductImage
+                  className="h-[112px] w-[132px] shrink-0"
+                  image={image}
                 />
                 <div className="flex min-w-0 flex-1 flex-col gap-2">
                   <h2 className="text-[16px] font-semibold leading-5">
